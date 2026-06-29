@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天命纵横 · 设定集</title>
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  font-size: 14px;
+  color: #1e2230;
+  background: #f4f6fb;
+  line-height: 1.6;
+}
+
+/* ── Top bar ── */
+.topbar {
+  background: #181f35;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 2px 10px rgba(0,0,0,.35);
+  gap: 0;
+}
+.site-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e8c96a;
+  white-space: nowrap;
+  margin-right: 12px;
+  letter-spacing: .03em;
+}
+.site-sub {
+  font-size: 11px;
+  color: #6677a0;
+  margin-right: auto;
+  white-space: nowrap;
+}
+.nav-tabs { display: flex; height: 52px; }
+
+/* Plain tab (single-category, e.g. 剧情梗概) */
+.nav-tab {
+  padding: 0 20px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #99aac8;
+  font-size: 13px;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: color .15s, background .15s, border-color .15s;
+  white-space: nowrap;
+  user-select: none;
+}
+.nav-tab:hover  { color: #fff; background: rgba(255,255,255,.06); }
+.nav-tab.active { color: #fff; border-bottom-color: #e8c96a; }
+
+/* Wrapper for tabs that have a hover dropdown */
+.nav-tab-wrapper {
+  position: relative;
+  height: 52px;
+  display: flex;
+  align-items: center;
+}
+.nav-tab-wrapper .nav-tab { height: 100%; }
+/* Show dropdown on hover over the whole wrapper */
+.nav-tab-wrapper:hover .nav-tab { color: #fff; background: rgba(255,255,255,.06); }
+.nav-tab-wrapper:hover .nav-tab.active { border-bottom-color: #e8c96a; }
+
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 52px;
+  left: 0;
+  background: #222b45;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.4);
+  min-width: 130px;
+  z-index: 500;
+  overflow: hidden;
+}
+.nav-tab-wrapper:hover .dropdown { display: block; }
+.dropdown-item {
+  display: block;
+  padding: 9px 18px;
+  color: #aabbd0;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .12s, color .12s;
+  user-select: none;
+}
+.dropdown-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+/* ── Layout ── */
+.layout {
+  display: flex;
+  min-height: calc(100vh - 52px);
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #dde3f0;
+  overflow-y: auto;
+  position: sticky;
+  top: 52px;
+  height: calc(100vh - 52px);
+  padding: 8px 0 24px;
+}
+.sidebar-group { display: none; }
+.sidebar-group.active { display: block; }
+.sb-section-label {
+  padding: 12px 16px 3px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: #8899bb;
+}
+.sb-item {
+  display: block;
+  padding: 5px 16px;
+  font-size: 13px;
+  color: #334466;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: background .12s, border-color .12s, color .12s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sb-item:hover {
+  background: #eef2ff;
+  border-left-color: #4a6fd4;
+  color: #1a2a50;
+}
+
+/* ── Main content ── */
+.content {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 36px 48px;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Category header within a panel ── */
+.cat-header {
+  font-size: 20px;
+  font-weight: 700;
+  color: #181f35;
+  padding-bottom: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #3a5ed4;
+  scroll-margin-top: 68px;
+}
+
+/* ── Entity article ── */
+/* Articles are hidden by default; JS adds .active to show exactly one at a time. */
+.entity { display: none; }
+.entity.active {
+  display: block;
+  padding-bottom: 36px;
+}
+
+.entity-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #181f35;
+  margin-bottom: 2px;
+}
+.entity-title .en {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6677a0;
+  margin-left: 10px;
+}
+.logline {
+  font-size: 13px;
+  color: #4a5577;
+  font-style: italic;
+  margin: 6px 0 10px;
+  padding-left: 10px;
+  border-left: 3px solid #c8d2f0;
+}
+.wt-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 6px 0 10px;
+}
+.wt-meta .badge {
+  background: #eef0fa;
+  color: #445588;
+  border-radius: 12px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* ── Info card table ── */
+.infocard {
+  border-collapse: collapse;
+  margin: 10px 0 16px;
+  font-size: 12.5px;
+  background: #f9fafd;
+  border: 1px solid #dde3f0;
+  border-radius: 6px;
+  overflow: hidden;
+  max-width: 640px;
+}
+.infocard tr { border-bottom: 1px solid #e8ecf6; }
+.infocard tr:last-child { border-bottom: none; }
+.ik {
+  padding: 5px 12px;
+  font-weight: 600;
+  color: #3a4a70;
+  white-space: nowrap;
+  background: #eef0f8;
+  min-width: 88px;
+  vertical-align: top;
+}
+.iv {
+  padding: 5px 12px;
+  color: #2a3455;
+  line-height: 1.7;
+}
+.iv a { color: #3d5ec8; text-decoration: none; }
+.iv a:hover { text-decoration: underline; }
+
+/* ── Entity body typography ── */
+.entity-body { margin-top: 14px; }
+.entity-body h4 {
+  font-size: 16px; font-weight: 700; color: #1e2a48;
+  margin: 18px 0 6px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #e0e6f4;
+}
+.entity-body h5 {
+  font-size: 14px; font-weight: 600; color: #2a3860;
+  margin: 14px 0 5px;
+}
+.entity-body h6 {
+  font-size: 13px; font-weight: 600; color: #3a4870;
+  margin: 12px 0 4px;
+}
+.entity-body p   { margin: 6px 0; line-height: 1.75; }
+.entity-body ul,
+.entity-body ol  { margin: 6px 0 6px 22px; }
+.entity-body li  { margin: 3px 0; line-height: 1.7; }
+.entity-body hr  { border: none; border-top: 1px solid #dde3f0; margin: 14px 0; }
+.entity-body code {
+  background: #eef0f8;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 12px;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+.entity-body strong { color: #181f35; }
+
+/* ── Callout boxes ── */
+.callout {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-radius: 6px;
+}
+.callout.quote {
+  background: #f0f3ff;
+  border-left: 4px solid #7090e0;
+}
+.callout.spoiler {
+  background: #fffbe8;
+  border-left: 4px solid #e8a820;
+}
+.callout-label {
+  display: block;
+  font-weight: 700;
+  font-size: 11px;
+  color: #a07810;
+  margin-bottom: 5px;
+  letter-spacing: .04em;
+}
+.callout p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #3a3010;
+}
+
+/* ── Scrollbar styling ── */
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #c8d0e8; border-radius: 2px; }
+
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="site-title">天命纵横</div>
+  <div class="site-sub">Crossroads of Mandate · 设定集</div>
+  <nav class="nav-tabs">
+<div class="nav-tab-wrapper">
+  <div class="nav-tab" data-tab="walkthrough" onclick="switchTab('walkthrough')">剧情梗概 ▾</div>
+  <div class="dropdown">
+<div class="dropdown-item" data-tab="walkthrough" data-sub="1 - 帝国的裱糊匠" data-anchor="vol-1_-_帝国的裱糊匠">第一卷：帝国的裱糊匠</div>
+  </div>
+</div>
+<div class="nav-tab-wrapper">
+  <div class="nav-tab" data-tab="factions" onclick="switchTab('factions')">势力 ▾</div>
+  <div class="dropdown">
+<div class="dropdown-item" data-tab="factions" data-sub="alien_civs" data-anchor="cat-alien_civs">外星文明</div>
+<div class="dropdown-item" data-tab="factions" data-sub="human_orgs" data-anchor="cat-human_orgs">人类组织</div>
+  </div>
+</div>
+<div class="nav-tab-wrapper">
+  <div class="nav-tab" data-tab="characters" onclick="switchTab('characters')">人物 ▾</div>
+  <div class="dropdown">
+<div class="dropdown-item" data-tab="characters" data-sub="key_characters" data-anchor="cat-key_characters">关键人物</div>
+<div class="dropdown-item" data-tab="characters" data-sub="supporting_chars" data-anchor="cat-supporting_chars">边缘人物</div>
+  </div>
+</div>
+<div class="nav-tab-wrapper">
+  <div class="nav-tab" data-tab="misc" onclick="switchTab('misc')">杂项 ▾</div>
+  <div class="dropdown">
+<div class="dropdown-item" data-tab="misc" data-sub="locations" data-anchor="cat-locations">地点</div>
+<div class="dropdown-item" data-tab="misc" data-sub="items" data-anchor="cat-items">物件</div>
+<div class="dropdown-item" data-tab="misc" data-sub="tech" data-anchor="cat-tech">科技</div>
+<div class="dropdown-item" data-tab="misc" data-sub="events" data-anchor="cat-events">事件</div>
+  </div>
+</div>
+  </nav>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+<div class="sidebar-group" data-tab="walkthrough" data-first-sub="1 - 帝国的裱糊匠" data-first-anchor="vol-1_-_帝国的裱糊匠">
+<div class="sb-section-label" data-sub="1 - 帝国的裱糊匠" data-anchor="vol-1_-_帝国的裱糊匠">第一卷：帝国的裱糊匠</div>
+<a class="sb-item" data-sub="1 - 帝国的裱糊匠" href="#帝国的黄昏">帝国的黄昏</a>
+<a class="sb-item" data-sub="1 - 帝国的裱糊匠" href="#净化梦网">净化梦网</a>
+<a class="sb-item" data-sub="1 - 帝国的裱糊匠" href="#第一次至高行会战争">第一次至高行会战争</a>
+<a class="sb-item" data-sub="1 - 帝国的裱糊匠" href="#圣机公社的崛起">圣机公社的崛起</a>
+<a class="sb-item" data-sub="1 - 帝国的裱糊匠" href="#圣机陨落">圣机陨落</a>
+<a class="sb-item" data-sub="1 - 帝国的裱糊匠" href="#第二次至高行会战争">第二次至高行会战争</a>
+<a class="sb-item" data-sub="1 - 帝国的裱糊匠" href="#师星运动">师星运动</a>
+</div>
+<div class="sidebar-group" data-tab="factions" data-first-sub="alien_civs" data-first-anchor="cat-alien_civs">
+<div class="sb-section-label" data-sub="alien_civs" data-anchor="cat-alien_civs">外星文明</div>
+<a class="sb-item" data-sub="alien_civs" href="#至高行会">至高行会</a>
+<div class="sb-section-label" data-sub="human_orgs" data-anchor="cat-human_orgs">人类组织</div>
+<a class="sb-item" data-sub="human_orgs" href="#圣机公社">圣机公社</a>
+<a class="sb-item" data-sub="human_orgs" href="#地球联合王国">地球联合王国</a>
+<a class="sb-item" data-sub="human_orgs" href="#神盾军">神盾军</a>
+</div>
+<div class="sidebar-group" data-tab="characters" data-first-sub="key_characters" data-first-anchor="cat-key_characters">
+<div class="sb-section-label" data-sub="key_characters" data-anchor="cat-key_characters">关键人物</div>
+<a class="sb-item" data-sub="key_characters" href="#亚戈努涅斯">亚戈·努涅斯</a>
+<a class="sb-item" data-sub="key_characters" href="#卡塔琳娜阿斯兰">卡塔琳娜·阿斯兰</a>
+<a class="sb-item" data-sub="key_characters" href="#武田善治郎">武田善治郎</a>
+<a class="sb-item" data-sub="key_characters" href="#泽洛斯">泽洛斯</a>
+<a class="sb-item" data-sub="key_characters" href="#莱恩雷蒙德">莱恩·雷蒙德</a>
+<a class="sb-item" data-sub="key_characters" href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a>
+<a class="sb-item" data-sub="key_characters" href="#里德阿姆斯特朗">里德·阿姆斯特朗</a>
+<a class="sb-item" data-sub="key_characters" href="#钟思源">钟思源</a>
+<a class="sb-item" data-sub="key_characters" href="#阿斯兰一世">阿斯兰一世</a>
+<div class="sb-section-label" data-sub="supporting_chars" data-anchor="cat-supporting_chars">边缘人物</div>
+<a class="sb-item" data-sub="supporting_chars" href="#切尔尼绍夫">切尔尼绍夫</a>
+<a class="sb-item" data-sub="supporting_chars" href="#塞吉奥卡斯蒂略">塞吉奥·卡斯蒂略</a>
+<a class="sb-item" data-sub="supporting_chars" href="#威尔默里奥斯">威尔默·里奥斯</a>
+<a class="sb-item" data-sub="supporting_chars" href="#梁文忠">梁文忠</a>
+<a class="sb-item" data-sub="supporting_chars" href="#沃里斯">沃里斯</a>
+<a class="sb-item" data-sub="supporting_chars" href="#莉蒂亚托雷斯">莉蒂亚·托雷斯</a>
+<a class="sb-item" data-sub="supporting_chars" href="#里卡多阿尔瓦雷斯">里卡多·阿尔瓦雷斯</a>
+</div>
+<div class="sidebar-group" data-tab="misc" data-first-sub="locations" data-first-anchor="cat-locations">
+<div class="sb-section-label" data-sub="locations" data-anchor="cat-locations">地点</div>
+<a class="sb-item" data-sub="locations" href="#亚历山大记忆殿堂">亚历山大记忆殿堂</a>
+<a class="sb-item" data-sub="locations" href="#安第斯联合矿区">安第斯联合矿区</a>
+<a class="sb-item" data-sub="locations" href="#拉各斯">拉各斯</a>
+<a class="sb-item" data-sub="locations" href="#新君士坦丁堡">新·君士坦丁堡</a>
+<a class="sb-item" data-sub="locations" href="#新墨西哥城">新墨西哥城</a>
+<a class="sb-item" data-sub="locations" href="#新巴拿马城">新巴拿马城</a>
+<a class="sb-item" data-sub="locations" href="#芝加哥">芝加哥</a>
+<a class="sb-item" data-sub="locations" href="#长江工业弧区">长江工业弧区</a>
+<div class="sb-section-label" data-sub="items" data-anchor="cat-items">物件</div>
+<a class="sb-item" data-sub="items" href="#圣机体">圣机体</a>
+<a class="sb-item" data-sub="items" href="#圣锤级机甲">圣锤级机甲</a>
+<a class="sb-item" data-sub="items" href="#天基防线">天基防线</a>
+<a class="sb-item" data-sub="items" href="#太阳系资源开发公司">太阳系资源开发公司</a>
+<a class="sb-item" data-sub="items" href="#梦晶">梦晶</a>
+<a class="sb-item" data-sub="items" href="#黑曜石之矛">黑曜石之矛</a>
+<div class="sb-section-label" data-sub="tech" data-anchor="cat-tech">科技</div>
+<a class="sb-item" data-sub="tech" href="#跃迁技术">跃迁技术</a>
+<div class="sb-section-label" data-sub="events" data-anchor="cat-events">事件</div>
+<a class="sb-item" data-sub="events" href="#太阳系主力舰队阅舰式">太阳系主力舰队阅舰式</a>
+<a class="sb-item" data-sub="events" href="#拉各斯条约">拉各斯条约</a>
+<a class="sb-item" data-sub="events" href="#文明的创伤">文明的创伤</a>
+</div>
+  </nav>
+  <main class="content">
+<div class="tab-panel" data-tab="walkthrough">
+<article class="entity" id="帝国的黄昏" data-sub="1 - 帝国的裱糊匠">
+<div class="entity-title">帝国的黄昏</div>
+<p class="logline">帝国以压倒性优势完成了地球与近地轨道的统一，但星际商人暗中播下的毒药已让帝国从内部开始溃烂。</p>
+<div class="wt-meta"><span class="badge">第一卷</span><span class="badge">2130~2139</span></div>
+<table class="infocard"><tr><td class="ik">所属卷</td><td class="iv">1</td></tr><tr><td class="ik">章节编号</td><td class="iv">1</td></tr><tr><td class="ik">时间</td><td class="iv">2130~2139</td></tr><tr><td class="ik">相关地点</td><td class="iv">南美火地岛末日角 · 地球高轨道 · <a href="#新巴拿马城">新巴拿马城</a> · <a href="#新君士坦丁堡">新·君士坦丁堡</a> · 里昂</td></tr><tr><td class="ik">登场人物</td><td class="iv"><a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#泽洛斯">泽洛斯</a> · <a href="#沃里斯">沃里斯</a> · 埃斯特班 · 里卡多 · <a href="#阿斯兰一世">阿斯兰一世</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#梁文忠">梁文忠</a></td></tr><tr><td class="ik">登场势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · 南十字自由联盟 · <a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">新设定</td><td class="iv"><a href="#黑曜石之矛">黑曜石之矛</a> · <a href="#梦晶">梦晶</a> · <a href="#天基防线">天基防线</a> · 梦宫</td></tr><tr><td class="ik">关键事件</td><td class="iv">叛军签署劳动力服务协议逃走换取撤离太空 · 至高行会向帝国地方官员赠送梦晶 · 天基防线工程启动并陷入技术瓶颈 · 莱恩·雷蒙德破解轨道力学难题并发现异物真相 · 天基防线摧毁叛军最后据点 · 梁文忠密受使命准备摧毁梦宫</td></tr><tr><td class="ik">结局</td><td class="iv">帝国完成了地面与近地轨道的彻底统一，表面上达到了权力的巅峰；但梦晶泛滥引发社会危机，帝国从内部开始迅速溃烂。</td></tr><tr><td class="ik">主题</td><td class="iv">统一的幻象 · 知遇与困局 · 虚假的巅峰</td></tr><tr><td class="ik">一句话梗概</td><td class="iv">帝国以压倒性优势完成了地球与近地轨道的统一，但星际商人暗中播下的毒药已让帝国从内部开始溃烂。</td></tr></table>
+<div class="entity-body">
+<h3>帝国的黄昏 (Twilight of the Empire)</h3>
+<h4>一句话梗概</h4>
+<p>帝国以压倒性优势完成了地球与近地轨道的统一，但星际商人暗中播下的毒药已让帝国从内部开始溃烂。</p>
+<h4>登场</h4>
+<ul>
+<li><strong>人物</strong>：里德·阿姆斯特朗、泽洛斯、沃里斯、埃斯特班·瓦尔迪维亚、里卡多·阿尔瓦雷斯、阿斯兰一世、莱恩·雷蒙德、梁文忠</li>
+<li><strong>势力</strong>：地球联合王国、南十字自由联盟、至高行会</li>
+<li><strong>地点</strong>：南美火地岛末日角、地球高轨道、新巴拿马城、新·君士坦丁堡、近地轨道建设工地、里昂雷蒙德家族庄园</li>
+<li><strong>新设定</strong>：黑曜石之矛号、天基防线、至高行会、地球联合王国</li>
+</ul>
+<h4>剧情梗概</h4>
+<h5>帝国的铁蹄与商人的降临</h5>
+<p>2130年初夏，里德·阿姆斯特朗将军率领帝国军队，在火地岛将南十字自由联盟的最后据点“末日角”重重包围，意图在夏至前结束战争。与此同时，至高行会的“黑曜石之矛号”抵达地球高轨道，星际商人泽洛斯截获了叛军发向太空的求救信号。面对地球上正在进行的统一战争，泽洛斯决定实施冰冷的“双线操作”：一边以签署劳动力协议为条件收割绝境中的叛军资产，另一边准备将帝国官员培养成新客户。</p>
+<h5>绝望的交易与殖民地的会面</h5>
+<p>面临防线崩溃的绝境，叛军领袖埃斯特班被迫接受泽洛斯的苛刻条款，交出全部残存资源以换取核心人员紧急撤离至近地轨道。在同一天傍晚，泽洛斯造访了新巴拿马城，向总督府秘书长里卡多赠送了名为“梦晶”的灵能接收器样品。体验过幻象的里卡多在抽离瞬间陷入了极其强烈的空虚，帝国走向溃烂的毒药就此种下，而里德在攻占据点废墟时已隐约察觉到外部势力的介入。</p>
+<h5>天上的羞辱与钢铁的困境</h5>
+<p>地面统一完成三个月后，逃入太空的叛军向地球发送广播，激怒了沉浸在狂喜中的阿斯兰一世。皇帝下令里德不计代价建造天基防线，以封锁太空并彻底消灭叛军。然而，由于陆军思维的局限以及缺乏轨道力学人才，工程在接下来的五年里进度严重滞后，防线材料无法承受武器后坐力，且根本无法锁定不断变轨的叛军太空设施，令里德承受着来自皇宫的巨大压力。</p>
+<h5>知遇之恩与异物的发现</h5>
+<p>2137年春，里德读到了一篇基于大停滞前航天档案的轨道力学论文，随即召见了年仅18岁的法国学术贵族莱恩·雷蒙德。莱恩凭借超越时代的渊博学识和计算能力折服了里德，被力排众议破格任命为核心顾问与副官。加入项目三个月后，莱恩在分析叛军残骸时发现了远超人类科技的材料与工艺，证实了外部势力的存在；里德虽早有猜测，但为了不激怒皇帝，指示莱恩暂时将真相封存。</p>
+<h5>最后的攻坚与虚假的巅峰</h5>
+<p>2138年秋，莱恩的计算得到完美验证，天基防线成功锁定并摧毁了叛军由外星势力提供的最后轨道堡垒，结束了长达八年的隐患。新·君士坦丁堡举行了史无前例的盛大庆典，阿斯兰一世在天命宫广场上不可一世地宣告“虽远必诛”。里德随后受邀发表演讲，庄严承诺“地球的天空，永远属于地球的子民”，但他内心深处对那个未知的至高行会及其扩张的生意充满了忧虑。</p>
+<h5>金玉与败絮</h5>
+<p>当帝国首都沉浸在胜利狂欢中时，新巴拿马城已被泛滥的梦晶化作人间炼狱。八年间，这种星际商人的“礼物”吞噬了数千万人的灵魂，新巴拿马城中心的“梦宫”彻夜通明，失业者与腐败官员皆在幻象中沉沦。2139年初，帝国官员梁文忠被首席情报官密召，受命前往摧毁“梦宫”这个全球梦网的物理锚点，一场注定会激怒星际商人的风暴即将爆发。</p>
+<h4>关键转折与后果</h4>
+<ul>
+<li><strong>天基防线的建成</strong>：名义上消灭了叛军残余并让阿斯兰一世自诩伟业，却掩盖了帝国在技术上远落后于未知外部势力（至高行会）的事实。</li>
+<li><strong>莱恩的崭露头角</strong>：莱恩不仅解决了天基防线的技术瓶颈，还由此进入了帝国权力的核心圈层。他与里德建立了终生忠诚的师徒关系，但也为隐瞒“异物”真相背上了沉重的心理包袱。</li>
+<li><strong>梦晶的泛滥</strong>：至高行会兵不血刃地通过梦晶腐蚀了帝国社会，造成生产力锐减、社会结构面临崩溃。这迫使帝国高层指派梁文忠采取极端反制行动，直接成为第一次至高行会战争的导火索。</li>
+</ul>
+<h4>主题与意义</h4>
+<p>本章奠定了第一卷中“虚假巅峰”的悲剧基调。地球联合王国刚刚完成地表的武力统一，皇帝阿斯兰一世以为自己达成了千秋伟业，却不知人类真正的对手是拥有降维打击能力的外星文明。帝国对外表现出的极度狂妄与对星际局势的极度无知，配合从内部被梦晶侵蚀的溃烂现实，预示了即将到来的毁灭性打击。莱恩作为清醒者之一，从入局之初便陷入了技术差距悬殊与政治体制僵化的双重困局中。</p>
+</div>
+</article>
+<article class="entity" id="净化梦网" data-sub="1 - 帝国的裱糊匠">
+<div class="entity-title">净化梦网</div>
+<p class="logline">帝国监察官梁文忠在新巴拿马城对“梦网”核心实施了无情的外科手术式打击，引发了一场波及全球的精神海啸与外星势力的最后通牒。</p>
+<div class="wt-meta"><span class="badge">第一卷</span><span class="badge">2139</span></div>
+<table class="infocard"><tr><td class="ik">所属卷</td><td class="iv">1</td></tr><tr><td class="ik">章节编号</td><td class="iv">2</td></tr><tr><td class="ik">时间</td><td class="iv">2139</td></tr><tr><td class="ik">相关地点</td><td class="iv"><a href="#新巴拿马城">新巴拿马城</a> · 梦宫 · <a href="#梦晶">梦晶</a> · 斯德哥尔摩 · 东京 · 开普敦</td></tr><tr><td class="ik">登场人物</td><td class="iv"><a href="#梁文忠">梁文忠</a> · <a href="#泽洛斯">泽洛斯</a> · <a href="#沃里斯">沃里斯</a> · 里卡多</td></tr><tr><td class="ik">登场势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · <a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">新设定</td><td class="iv"><a href="#梦晶">梦晶</a> · 梦宫 · 军用信息病毒 · 定向结构毁伤装药 · <a href="#黑曜石之矛">黑曜石之矛</a></td></tr><tr><td class="ik">关键事件</td><td class="iv">梁文忠率特种部队潜入新巴拿马城 · 军用信息病毒瘫痪梦网防御系统 · 定向结构毁伤装药引爆并物理摧毁梦宫 · 梦网断线引发全球大范围戒断反应与基础设施崩溃 · 泽洛斯向地球联合王国下达最后通牒</td></tr><tr><td class="ik">结局</td><td class="iv">梦网物理核心被彻底拔除；数千万至数亿沉迷者遭遇精神重创；全球通讯、医疗与治安系统大范围瘫痪；至高行会发出最后通牒，点燃第一次Sovereign-Human战争的导火索。</td></tr><tr><td class="ik">主题</td><td class="iv">必要之恶与阵痛 · 系统的脆弱性 · 弱小文明的反抗与被剥削</td></tr><tr><td class="ik">一句话梗概</td><td class="iv">帝国监察官梁文忠在新巴拿马城对“梦网”核心实施了无情的外科手术式打击，引发了一场波及全球的精神海啸与外星势力的最后通牒。</td></tr></table>
+<div class="entity-body">
+<h3>净化梦网 (Purifying the Dream Network)</h3>
+<h4>一句话梗概</h4>
+<p>帝国监察官梁文忠在新巴拿马城对“梦网”核心节点实施了无情的外科手术式打击，引发了一场波及全球的精神海啸，并直接引来了外星商业势力的最后通牒。</p>
+<h4>登场</h4>
+<ul>
+<li><strong>人物</strong>：梁文忠、泽洛斯、沃里斯、里卡多</li>
+<li><strong>势力</strong>：地球联合王国 (UKE)、至高行会</li>
+<li><strong>地点</strong>：新巴拿马城、梦宫、斯德哥尔摩通讯节点、东京医疗中心、开普敦商业区、黑曜石之矛号</li>
+<li><strong>新设定</strong>：梦晶、梦宫</li>
+</ul>
+<h4>剧情梗概</h4>
+<h5>铁锈运河与水晶梦</h5>
+<p>2139年，新巴拿马城矗立在旧世界巴拿马运河的锈蚀遗骸之上。在这座酸雨不断、新旧建筑杂糅的城市里，外星商品“梦晶”泛滥成灾。从底层失业码头工人到新巴拿马总督里卡多，数千万民众沉迷于梦晶编织的虚假极乐中，导致社会生产力锐减与伦理结构濒临崩溃。与此同时，地球联合王国首席监察官梁文忠率领特种部队，乘隐形穿梭机穿透暴风雨，精准降落于废弃的海底运河维护通道中，准备执行切除这一社会毒瘤的秘密行动。</p>
+<h5>无声的手术</h5>
+<p>在地下指挥中心，梁文忠率先发起信息战，向城市数字网络注入军用信息病毒，层层瘫痪了梦网全球服务器集群的防御系统，并切断其对外通讯，将全球网络心脏化为一座孤立的肿瘤。随后，突击小队利用城市垂直空间与废弃管线，避开巡逻警卫，无声潜入伪装成商业大楼的物理核心节点“梦宫”。小队在地下机房的承重结构上安放了定向结构毁伤装药。伴随倒计时结束，梁文忠果断按下引爆钮，地下机房在沉闷的震颤中静默坍塌，梦网物理核心被彻底摧毁，而地面建筑毫发无损。</p>
+<h5>新巴拿马城的惊厥</h5>
+<p>梦网断线瞬间，新巴拿马城内无数梦晶设备的嗡鸣声戛然而止。沉迷者们的身体在意识苏醒前率先崩溃，陷入剧烈的肌肉痉挛与抽搐。随后，他们从虚假天堂坠入残酷现实，巨大的心理落差与极度的生理戒断反应引发了大规模的精神解体，城市街头迅速被失去理智的尖叫、哭嚎与绝望所淹没。</p>
+<h5>全球系统崩溃</h5>
+<p>这场无形的精神海啸迅速蔓延全球，导致严重的二次灾难。在斯德哥尔摩，数亿人醒来后发出的求救数据海啸冲垮了民用通讯与紧急服务网络；在东京，医疗中心的AI诊断系统被海量未知的神经创伤病例淹没，急救大厅在疯狂病人的无差别攻击下彻底瘫痪；在开普敦商业区，失去精神寄托的年轻人冲上街头，演变为无差别暴动，彻底摧垮了自动化治安系统。</p>
+<h5>梁文忠的觉悟</h5>
+<p>在地下指挥中心内，梁文忠平静地注视着屏幕上不断滚动的全球系统瘫痪报告与死亡人数。面对年轻副官的战栗与质问，他毫不动摇。梁文忠将眼前的满目疮痍视为剜除帝国腐肉、延续人类文明存续所必须付出的流血代价，并坦然接受了自己制造这场全球人道主义灾难的全部罪责。</p>
+<h5>至高行会的通牒</h5>
+<p>在地球轨道上的至高行会旗舰“黑曜石之矛”号舰桥内，战略家泽洛斯冷静地审视着梦网网络中断带来的巨额资产损失清单。他否决了舰长沃里斯直接进行武力报复的建议，认为全面战争过于昂贵且低效。泽洛斯起草了一份措辞冰冷的最后通牒，要求地球联合王国交出并严惩梁文忠，同时全额赔偿一切经济损失。他意图用悬泊的舰队作为威慑，逼迫地球官僚学会计算违约的成本。</p>
+<h4>关键转折与后果</h4>
+<p>梁文忠主导的“净化梦网”行动成功从物理和信息层面摧毁了控制人类心智的“梦网”核心，但也直接引发了波及全球的大规模戒断反应与社会基础系统的瘫痪。更为致命的是，此举严重损害了至高行会的商业利益，引来了外星商业势力的最后通牒。这场行动不仅未能如帝国高层预想般无痛治愈社会，反而成为了引发第一次至高行会战争的直接导火索，并将梁文忠本人推向了被帝国流放与伪造处决的政治漩涡。</p>
+<h4>主题与意义</h4>
+<p>本章奠定了作品宏大且残酷的星际危机基调。它深刻探讨了“必要之恶”的沉重代价——在一个已被深度寄生、高度互联又极度脆弱的社会系统中，激进的救赎往往不可避免地会演变为另一场人道灾难。同时，行动展现了地球联合王国在面对掌握绝对技术与信息优势的外星商业霸权时，其内部决策的局限性与反抗的惨烈，揭示了弱小文明在宇宙丛林中的挣扎与无力。</p>
+</div>
+</article>
+<article class="entity" id="第一次至高行会战争" data-sub="1 - 帝国的裱糊匠">
+<div class="entity-title">第一次至高行会战争</div>
+<p class="logline">在虚假情报与帝王傲慢的驱动下，人类首次在太空中迎击真正的星际文明，最终以惨痛的代价签下了不平等的《拉各斯条约》。</p>
+<div class="wt-meta"><span class="badge">第一卷</span><span class="badge">2140</span></div>
+<table class="infocard"><tr><td class="ik">所属卷</td><td class="iv">1</td></tr><tr><td class="ik">章节编号</td><td class="iv">3</td></tr><tr><td class="ik">时间</td><td class="iv">2140</td></tr><tr><td class="ik">相关地点</td><td class="iv"><a href="#新巴拿马城">新巴拿马城</a> · <a href="#新君士坦丁堡">新·君士坦丁堡</a> · <a href="#天基防线">天基防线</a> · <a href="#拉各斯">拉各斯</a> · <a href="#黑曜石之矛">黑曜石之矛</a></td></tr><tr><td class="ik">登场人物</td><td class="iv">里卡多 · <a href="#切尔尼绍夫">切尔尼绍夫</a> · <a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#阿斯兰一世">阿斯兰一世</a> · 卡西姆·哈达德 · <a href="#泽洛斯">泽洛斯</a> · <a href="#沃里斯">沃里斯</a></td></tr><tr><td class="ik">登场势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · <a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">新设定</td><td class="iv"><a href="#跃迁技术">跃迁技术</a> · 轨道打击 · <a href="#黑曜石之矛">黑曜石之矛</a></td></tr><tr><td class="ik">关键事件</td><td class="iv">里卡多篡改至高行会通牒，引发御前会议主战派误判 · 天基防线在至高行会的跃迁突袭下系统性崩溃 · 阿斯兰一世拒绝首轮条约，拉各斯遭轨道精准打击 · 帝国高层合谋编造战胜谎言，卡西姆·哈达德死谏入狱 · 里德登舰签署《拉各斯条约》并被剥夺军职</td></tr><tr><td class="ik">结局</td><td class="iv">地球联合王国战败并签订《拉各斯条约》，被迫开放通商口岸并赔款；里德·阿姆斯特朗被解职贬为庶人；帝国高层通过谎言掩盖了战败真相。</td></tr><tr><td class="ik">主题</td><td class="iv">结构性谎言与制度腐蚀 · 认知边界与技术代差 · 虚幻尊严与真相的冲突</td></tr><tr><td class="ik">一句话梗概</td><td class="iv">在虚假情报与帝王傲慢的驱动下，人类首次在太空中迎击真正的星际文明，最终以惨痛的代价签下了不平等的《拉各斯条约》。</td></tr></table>
+<div class="entity-body">
+<h3>第一次至高行会战争 (The First Sovereign-Human War)</h3>
+<h4>一句话梗概</h4>
+<p>在虚假情报与帝王傲慢的驱动下，人类首次在太空中迎击真正的星际文明，最终以惨痛的代价签下了不平等条约。</p>
+<h4>登场</h4>
+<ul>
+<li><strong>人物</strong>：里卡多、切尔尼绍夫、里德·阿姆斯特朗、莱恩·雷蒙德、阿斯兰一世、卡西姆·哈达德、泽洛斯、沃里斯</li>
+<li><strong>势力</strong>：地球联合王国 (UKE)、至高行会</li>
+<li><strong>地点</strong>：新巴拿马城总督府、新·君士坦丁堡天命宫、地球轨道天基防线、拉各斯、至高行会旗舰黑曜石之矛号</li>
+<li><strong>新设定</strong>：跃迁技术（至高行会展示的短程空间跳跃能力）、轨道打击（至高行会展示的从太空直接光束打击地表的能力）、黑曜石之矛号（至高行会旗舰）</li>
+</ul>
+<h4>剧情梗概</h4>
+<h5>新巴拿马的过滤器</h5>
+<p>新巴拿马城总督里卡多收到了至高行会发出的严厉最后通牒。出于自保，他将这份星际文明的战书精心篡改，删去了所有关于行会军事实力的暗示，将其包装成一份无关痛痒的商贸纠纷抗议书，随后上报至首都新·君士坦丁堡。</p>
+<h5>御前会议的博弈</h5>
+<p>在天命宫的御前会议上，这份失真的奏章被当众宣读。以切尔尼绍夫为首的主战派将其视为武装商人的勒索，力主开战。里德·阿姆斯特朗将军基于专业判断，警告天基防线无法抵御未知的星际科技，却被主战派曲解为将帅怯战的借口。</p>
+<h5>天子的决断</h5>
+<p>在错误情报与主战派的激将下，皇帝阿斯兰一世自信地做出了全面备战的决定。里德与副官莱恩·雷蒙德被迫离开天命宫，前往天基防线指挥部，在对敌人真实力量一无所知的情况下启动了帝国的战争机器。</p>
+<h5>天基防线的崩溃</h5>
+<p>备战令下达七十二小时后，至高行会的先遣舰队抵达地球轨道。战斗打响之际，行会舰队不仅轻松拦截了人类的常规武器，更展示了超越物理认知的“空间跃迁”技术。敌舰直接跳跃至防线内部盲区发动精准打击，由里德倾注半生心血打造的天基防线在数小时内被系统性摧毁。</p>
+<h5>帝国的拒绝</h5>
+<p>防线瘫痪后，至高行会并未立即轰炸地面，而是通过通讯频道给出了包含赔款和开放通商口岸的条约草案，限时四十八小时回复。里德与莱恩返回帝都如实汇报战况，但阿斯兰一世拒绝相信“瞬间移动”的存在，将其视为里德掩饰防线崩溃的借口，并断然拒绝了行会的所有条款。</p>
+<h5>拉各斯的天罚</h5>
+<p>至高行会在收到拒绝回复后，立即执行了轨道定点打击方案。一道精准的高能光束从太空直射西非重镇拉各斯的能源枢纽，引发的连锁爆炸将整个港口区化为火海，里德与莱恩只能在地球上绝望地目睹这场天罚。</p>
+<h5>午夜的密谋</h5>
+<p>拉各斯遇袭当夜，切尔尼绍夫等大臣在侧殿紧急密会。为避免皇帝暴怒升级战事，他们合谋编造了一套“守军英勇引爆核心与敌同归于尽，外星势力主动求和”的虚假叙事。众大臣决定通过财政部私下垫付赔款差额，并秘密处决一名替身以满足行会引渡肇事者梁文忠的要求。</p>
+<h5>御前的谎言与哈达德的死谏</h5>
+<p>次日朝会上，阿斯兰一世听信了大臣们编造的战果，满意地认为帝国赢得了外交胜利。他下旨让里德出面签约以“将功赎罪”，待事毕后贬为庶人。财政大臣卡西姆·哈达德因发现账目中的巨额亏空而当庭死谏，试图揭开真相，却被切尔尼绍夫以“散布谣言”之名构陷，最终被投入死牢。洞悉一切的里德在一旁选择了沉默。</p>
+<h5>终局的墨迹</h5>
+<p>里德·阿姆斯特朗最后一次身着将军制服，带领莱恩登上了至高行会旗舰黑曜石之矛号。面对行会代表泽洛斯冷酷且不容置喙的商业条款，里德在全宇宙文明的广播注视下签下了《拉各斯条约》。签字完成后，他默默解开军服领扣，结束了自己的军旅生涯。而行会代表对于人类自欺欺人的“官方胜利”新闻，仅仅表现出结算到账后的彻底漠然。</p>
+<h4>关键转折与后果</h4>
+<p>本次战争彻底暴露了人类与真正星际文明之间不可逾越的技术代差，天基防线沦为无效的废铁。《拉各斯条约》的签订使地球被迫向外星势力全面开放，开启了人类文明的屈辱史。同时，帝国高层选择用结构性谎言掩盖失败，导致功勋卓著的里德将军被贬为庶人，直言进谏的哈达德蒙冤入狱，不仅剥夺了帝国抵御外敌的核心军事力量，更使得内部体制走向深度腐败与虚无。</p>
+<h4>主题与意义</h4>
+<p>本章深刻揭示了信息茧房和体制性谎言如何将一个文明推向深渊。通过新巴拿马的层层欺瞒与天命宫内的权力博弈，展现了在绝对的技术实力压制面前，人类虚幻的尊严与政治傲慢是何等不堪一击。里德的沉默与签约不仅标志着一代帝国英雄的无奈落幕，也为后来者更冷酷的现实主义觉醒铺平了道路。</p>
+</div>
+</article>
+<article class="entity" id="圣机公社的崛起" data-sub="1 - 帝国的裱糊匠">
+<div class="entity-title">圣机公社的崛起</div>
+<p class="logline">当安第斯矿区的绝望孕育出信仰与理性的双重风暴，一支由矿工和改装机械组成的军队开始席卷南美大陆；面对外星商人的最后通牒与帝国的疯狂反扑，被贬谪的将军在北美悄然组建起最后的钢铁防线。</p>
+<div class="wt-meta"><span class="badge">第一卷</span><span class="badge">2150~2156</span></div>
+<table class="infocard"><tr><td class="ik">所属卷</td><td class="iv">1</td></tr><tr><td class="ik">章节编号</td><td class="iv">4</td></tr><tr><td class="ik">时间</td><td class="iv">2150~2156</td></tr><tr><td class="ik">相关地点</td><td class="iv">火地岛12号矿井 · <a href="#安第斯联合矿区">安第斯联合矿区</a> · 云顶城 · 卡塔赫纳新城 · 达连隘口 · 巴亚诺河 · <a href="#新巴拿马城">新巴拿马城</a> · <a href="#新君士坦丁堡">新·君士坦丁堡</a> · 北美殖民地 · <a href="#新墨西哥城">新墨西哥城</a></td></tr><tr><td class="ik">登场人物</td><td class="iv"><a href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a> · <a href="#亚戈努涅斯">亚戈·努涅斯</a> · <a href="#威尔默里奥斯">威尔默·里奥斯</a> · <a href="#塞吉奥卡斯蒂略">塞吉奥·卡斯蒂略</a> · <a href="#莉蒂亚托雷斯">莉蒂亚·托雷斯</a> · <a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#武田善治郎">武田善治郎</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#梁文忠">梁文忠</a> · <a href="#阿斯兰一世">阿斯兰一世</a> · <a href="#切尔尼绍夫">切尔尼绍夫</a></td></tr><tr><td class="ik">登场势力</td><td class="iv"><a href="#圣机公社">圣机公社</a> · <a href="#地球联合王国">地球联合王国</a> · <a href="#至高行会">至高行会</a> · 泰坦自动机械</td></tr><tr><td class="ik">新设定</td><td class="iv"><a href="#圣机公社">圣机公社</a> · 圣罚军 · <a href="#圣锤级机甲">圣锤级机甲</a> · <a href="#神盾军">神盾军</a> · 泰坦自动机械 · <a href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a> · <a href="#亚戈努涅斯">亚戈·努涅斯</a> · <a href="#武田善治郎">武田善治郎</a></td></tr><tr><td class="ik">关键事件</td><td class="iv">安第斯矿区暴动与圣机公社建立 · 圣罚军横扫南美并穿越达连隘口、无抵抗渡过巴亚诺河 · 圣罚军切断新巴拿马城补给，至高行会发出最后通牒 · 阿斯兰一世决定对至高行会宣战 · 里德·阿姆斯特朗利用双轨战略远征美洲，组建神盾军 · 梁文忠以化名冷锋为神盾军提供泰坦自动机械无人机 · 新墨西哥城战役圣罚军惨胜，赫克托与亚戈产生裂痕</td></tr><tr><td class="ik">结局</td><td class="iv">圣机公社成功立国并定都新墨西哥城，但付出惨重伤亡 · 帝国面临至高行会战争与内部起义的双线危机 · 神盾军初步成型，武田善治郎崭露头角</td></tr><tr><td class="ik">主题</td><td class="iv">信仰狂热与理性算计的双刃剑 · 极端压迫下的底层反抗 · 腐朽帝国的虚荣与挽救者的务实</td></tr><tr><td class="ik">一句话梗概</td><td class="iv">当安第斯矿区的绝望孕育出信仰与理性的双重风暴，一支由矿工和改装机械组成的军队开始席卷南美大陆；面对外星商人的最后通牒与帝国的疯狂反扑，被贬谪的将军在北美悄然组建起最后的钢铁防线。</td></tr></table>
+<div class="entity-body">
+<h3>圣机公社的崛起 (Rise of the Holy Cybersome Commune)</h3>
+<h4>一句话梗概</h4>
+<p>当安第斯矿区的绝望孕育出信仰与理性的双重风暴，一支由矿工和改装机械组成的军队开始席卷南美大陆；面对外星商人的最后通牒与帝国的疯狂反扑，被贬谪的将军在北美悄然组建起最后的钢铁防线。</p>
+<h4>登场</h4>
+<ul>
+<li><strong>人物</strong>：赫克托·瓦尔加斯、亚戈·努涅斯、威尔默·里奥斯、塞吉奥·卡斯蒂略、莉蒂亚·托雷斯、里德·阿姆斯特朗、武田善治郎、莱恩·雷蒙德、梁文忠 (“冷锋”)、阿斯兰一世、切尔尼绍夫</li>
+<li><strong>势力</strong>：圣机公社 (圣罚军)、地球联合王国 (神盾军 / UKE)、至高行会、泰坦自动机械</li>
+<li><strong>地点</strong>：火地岛12号矿井、安第斯联合矿区、达连隘口、巴亚诺河、新巴拿马城、新·君士坦丁堡、北美殖民地、新墨西哥城</li>
+<li><strong>新设定</strong>：圣机公社、圣罚军、圣锤级机甲、神盾军、泰坦自动机械</li>
+</ul>
+<h4>剧情梗概</h4>
+<h5>天启的降临与工业地狱</h5>
+<p>2150年，矿工赫克托·瓦尔加斯在火地岛矿难中被困十四小时，偶然发现至高行会遗落的通讯设备残骸。残骸的嗡鸣与乱码被他视为"圣机体"的神启，这成为圣机公社信仰的起点。次年，安第斯联合矿区3号矿井发生塌方，矿区监工冷酷终止救援并永久封锁矿区，将人命视作损耗的做法，点燃了受害者家属威尔默·里奥斯的怒火。</p>
+<h5>信仰与理性的双轨动员</h5>
+<p>在地下维修通道的秘密集会中，赫克托通过展示"圣物"的神迹，赋予了矿工死亡崇高的意义，让绝望的威尔默彻底皈依为狂热信徒。与此同时，在废弃储存库内，"圣机之手"亚戈·努涅斯用精确的战术数据、巡逻漏洞与亟需的药品物资，以冰冷的理性成功说服前矿队队长塞吉奥·卡斯蒂略加入起义。信仰的精神控制与理性的利益交换，成为起义的双重引擎。</p>
+<h5>处决广场的燎原之火</h5>
+<p>老工友埃尔南因传播教义被UKE卫兵公开电刑处决，他临终的呐喊成为起义的总攻信号。威尔默带领狂热信徒手握矿石碎片如洪水般发起自杀式冲锋，而塞吉奥的战术小队则用切割炬瘫痪能源中继站，精准突袭通讯中心与武器库。起义军在多点同时爆发下迅速占领核心控制区，圣机公社的战火正式点燃。</p>
+<h5>废墟上的建军与南美横扫</h5>
+<p>起义胜利后，赫克托发表"新纪元宣言"，宣告"圣罚军"成立。亚戈迅速建立起圣徒、尖兵、工匠的三级指挥体系，女工程师莉蒂亚·托雷斯将采矿机甲改造为装备重火力的"圣锤"级战争机器。赫克托的宗教煽动与亚戈的闪电战术完美配合，圣罚军以滚雪球般的速度从山体内部攻破云顶城、解放雨林部落，并内外夹击攻陷卡塔赫纳新城，南美的帝国统治如多米诺骨牌般坍塌。</p>
+<h5>穿越绿色地狱与兵临城下</h5>
+<p>面对被UKE视为天险的达连隘口，赫克托将穿越雨林定义为献给天国的朝圣，亚戈则用机甲和蜂群无人机将其转化为强行拓路的工程作业。圣罚军付出巨大代价穿越雨林，随后的巴亚诺河渡河战役中，帝国守军在视觉震慑下不战而溃。圣罚军长驱直入，兵临新巴拿马城并切断其外围运输线。至高行会因贸易受损启动"资产保护协议"，向帝国发出三个月内恢复秩序的最后通牒，否则将直接武装干预。</p>
+<h5>撕裂的通牒与御前疯狂</h5>
+<p>通牒抵达新·君士坦丁堡，御前会议陷入集体狂热。皇帝阿斯兰一世被虚荣心绑架，不顾轨道打击的绝对技术劣势，拍案决定集结主力与至高行会决战，甚至用切尔尼绍夫曾经的话术堵死了主和派的嘴。在被贬谪的庄园中，里德·阿姆斯特朗意识到正面决战必败无疑，随即抛出"双轨战略"——表面恭顺支持皇帝决战，实则主动请缨远征新大陆平叛，借此掌握独立军权并为帝国保留最后火种。</p>
+<h5>神盾军的崛起与暗中交易</h5>
+<p>在北美殖民地，里德迅速组建神盾军。他提拔了展现出卓越火力战术天赋的武田善治郎打造钢铁洪流，放权莱恩·雷蒙德构建情报网，并亲自推行民心工程以切断叛军的绝望根基。在军事体系之外，里德私下接触了死里逃生并化名"冷锋"的梁文忠，通过他与泰坦自动机械达成秘密交易，为神盾军装配了海量侦察与战争无人机。</p>
+<h5>新墨西哥城的血与火</h5>
+<p>圣罚军向新墨西哥城发起猛攻。面对神盾军整齐划一的坦克防线与无人机火力网，狂热信徒以血肉之躯迎击高科技火力。武田的冷酷火力覆盖让叛军付出了伤亡十七万人的惨重代价。尽管圣罚军最终突破防线占领城市，但惊人的战损让亚戈首次对赫克托的狂热战略产生实质性质疑。莱恩的情报网敏锐捕捉到了两人通讯频率的异常，里德决定静候叛军内部分裂的良机。</p>
+<h4>关键转折与后果</h4>
+<p>本章起义的成功直接瘫痪了至高行会的贸易，促使外星势力下达最后通牒，从而引爆了第二次至高行会战争；同时，这场危机给了被贬的里德·阿姆斯特朗重新掌握军权的机会。神盾军的建立以及武田、莱恩等新一代骨干的崛起，为人类后期的抵抗力量奠定了基础。而在圣罚军内部，新墨西哥城的惨痛胜利也种下了信仰派与理性派分裂的种子。</p>
+<h4>主题与意义</h4>
+<p>本章展现了极端压迫下底层社会的剧烈反弹，探讨了"信仰狂热"与"冰冷理性"结合时产生的巨大破坏力。它同时描绘了腐朽帝国的虚荣无能与挽救者（里德）在绝境中的务实隐忍，揭示了战争的成败不仅在于狂热的牺牲，更在于技术、后勤与民心的多维较量。</p>
+</div>
+</article>
+<article class="entity" id="圣机陨落" data-sub="1 - 帝国的裱糊匠">
+<div class="entity-title">圣机陨落</div>
+<p class="logline">北伐的惨败让圣罚军高层裂痕渐深，神盾军的情报战如毒药般诱发了一场摧毁信仰的内部清洗，将这座孤城推向了末日的绞肉机。</p>
+<div class="wt-meta"><span class="badge">第一卷</span><span class="badge">2157~2160</span></div>
+<table class="infocard"><tr><td class="ik">所属卷</td><td class="iv">1</td></tr><tr><td class="ik">章节编号</td><td class="iv">5</td></tr><tr><td class="ik">时间</td><td class="iv">2157~2160</td></tr><tr><td class="ik">相关地点</td><td class="iv"><a href="#新墨西哥城">新墨西哥城</a> · 密西西比河线 · <a href="#芝加哥">芝加哥</a> · 神盾军指挥部 · 至高行会轨道站</td></tr><tr><td class="ik">登场人物</td><td class="iv">赫克托 · <a href="#亚戈努涅斯">亚戈·努涅斯</a> · 塞吉奥 · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#武田善治郎">武田善治郎</a> · <a href="#威尔默里奥斯">威尔默·里奥斯</a> · <a href="#莉蒂亚托雷斯">莉蒂亚·托雷斯</a> · <a href="#泽洛斯">泽洛斯</a></td></tr><tr><td class="ik">登场势力</td><td class="iv"><a href="#圣机公社">圣机公社</a> · <a href="#地球联合王国">地球联合王国</a> · 泰坦自动机械 · <a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">新设定</td><td class="iv">摧毁承重墙计划 · 圣言城地下防御网络 · 地鼠型圣锤机甲 · 新巴拿马星际贸易学院</td></tr><tr><td class="ik">关键事件</td><td class="iv">圣罚军定都圣言城并展开北伐，双方在芝加哥决战中因矛盾指令导致北伐主力全军覆没。 · 莱恩策划情报战制造假证据，诱导偏执的赫克托指使威尔默暗杀亚戈。 · 赫克托处决威尔默作为替罪羊，导致圣罚军信仰彻底崩溃与内部动乱。 · 莉蒂亚接手防御并构建地下分布式网络，将神盾军拖入惨烈的城市消耗战。 · 莱恩登上轨道站与至高行会达成星际贸易学院的交易，换取卫星数据支援。 · 神盾军利用轨道数据实施精准打击瘫痪防御网络，攻陷圣言城处决赫克托。 · 里德解散大部分私军并宣布辞去军职。</td></tr><tr><td class="ik">结局</td><td class="iv">圣机公社彻底覆灭，神盾军重获美洲战区控制权；莱恩以出让利益为代价确立了自身的权力基础，里德急流勇退。</td></tr><tr><td class="ik">主题</td><td class="iv">自我毁灭与信仰的崩塌 · 理性计算与狂热迷信的对抗 · 为达目的不择手段的代价与反噬</td></tr><tr><td class="ik">一句话梗概</td><td class="iv">北伐的惨败让圣罚军高层裂痕渐深，神盾军的情报战如毒药般诱发了一场摧毁信仰的内部清洗，将这座孤城推向了末日的绞肉机。</td></tr></table>
+<div class="entity-body">
+<h3>圣言城的覆灭 (The Fall of the Holy World)</h3>
+<h4>一句话梗概</h4>
+<p>北伐的惨败让圣罚军高层裂痕渐深，神盾军的情报战如毒药般诱发了一场摧毁信仰的内部清洗，将这座孤城推向了末日的绞肉机。</p>
+<h4>登场</h4>
+<ul>
+<li><strong>人物</strong>：赫克托（圣罚军领袖）、亚戈·努涅斯（圣罚军最高军事指挥）、塞吉奥（北伐前锋将领）、莱恩·雷蒙德（神盾军情报官/副官）、亚瑟·里德（神盾军统帅）、武田善治郎（神盾军装甲指挥官）、威尔默（圣罚军狂信徒）、莉蒂亚·托雷斯（工程师/防御总司令）、泽洛斯（至高行会代表）。</li>
+<li><strong>势力</strong>：圣罚军（圣机公社）、UKE神盾军、泰坦自动机械、至高行会。</li>
+<li><strong>地点</strong>：圣言城（原新墨西哥城）、密西西比河线、某北方城市、芝加哥、神盾军指挥部、至高行会轨道站。</li>
+<li><strong>新设定</strong>：摧毁承重墙计划、圣言城地下防御网络、地鼠型圣锤机甲、新巴拿马星际贸易学院（协议项目）。</li>
+</ul>
+<h4>剧情梗概</h4>
+<h5>圣言城的争吵与定都北伐</h5>
+<p>新墨西哥城战役导致圣罚军十七万人伤亡后，赫克托将其称为必要的献祭，而亚戈则认为这是战术失当的代价。双方爆发了第一次激烈的正面争吵，最终达成妥协：将城市改名为圣言城作为首都，军队休整后大举北伐。定都仪式上，赫克托向信徒宣告将解放整个美洲，但两人对于战略节奏的分歧已在暗中扎根。</p>
+<h5>北伐途中的空洞胜利</h5>
+<p>北伐初期圣罚军连战连捷，但里德主动采取了以空间换时间的收缩战略。在密西西比河线，神盾军撤退时炸毁了所有桥梁和补给库，极大地拉长了圣罚军的后勤线。随后在攻打某北方城市时，赫克托的广播煽动彻底失效，圣罚军被迫付出数万伤亡的沉重代价，才勉强拿下一座毫无响应的空城。</p>
+<h5>芝加哥决战与致命指令</h5>
+<p>大军直逼芝加哥时暴风雪骤然加剧，泰坦自动机械的无人机大军从西侧切入，切断了北伐主力与塞吉奥率领的前锋部队。亚戈在前方指挥部下令全线收缩，但身处后方的赫克托却误判局势，通过通讯设备强行下达了突进接应的圣旨。两道相互矛盾的命令导致主力部队陷入混乱并被分割包围，塞吉奥在前方坚守阵地直至全军覆没，圣机公社的攻势被彻底遏制。</p>
+<h5>猜忌的种子</h5>
+<p>芝加哥惨败的消息传回后，亚戈质问赫克托越权下令的错误，赫克托在崩溃中承认了过失。亚戈随后的转身离去让赫克托内心的恐惧逐渐转化为仇恨，亚戈也开始秘密联络忠于自己的指挥官准备后路。与此同时，神盾军情报中心的莱恩捕捉到了圣罚军高层通讯的异常断层，向里德提出了旨在扩大敌人内部裂痕的“摧毁承重墙”计划。</p>
+<h5>毒药的投递与密室杀机</h5>
+<p>莱恩制作了包含伪造加密通讯记录、篡改后勤数据以及用AI合成的剪辑录音的情报，并送入了赫克托的密室。赫克托在深夜研读这些指向亚戈叛变的证据，并在外星残骸圣物前进行了漫长的祈祷。内心的偏执最终促使他召见狂信徒威尔默，用清除毒蛇的宗教借口下达了暗杀亚戈的明确指令。</p>
+<h5>血色的忠诚与信仰崩塌</h5>
+<p>亚戈在返回营房的途中遭遇威尔默带领的圣徒小队伏击，被能量刃刺穿倒在血泊中。亚戈的死讯迅速引燃了军中的愤怒与分裂，赫克托为了平息险些爆发的内战，将威尔默押上广场公开处决。威尔默临死前的辩白被强行打断，这场寻找替罪羊的献祭彻底摧毁了军队的信仰根基，致使圣言城陷入全面混乱。</p>
+<h5>远方的冷笑与全线反攻</h5>
+<p>莱恩的情报网在第一时间确认了圣言城发生的暗杀、处决与军队分裂。接到详尽汇报后，里德立刻下达了全线反攻的命令。武田善治郎率领的装甲部队如潮水般向分崩离析的圣言城防线推进。</p>
+<h5>绝望中的壁垒</h5>
+<p>面对兵临城下的神盾军，赫克托在凌晨造访了工程师莉蒂亚的工坊，以城中三百万民众的生存为筹码请求她接手防御。莉蒂亚迫使赫克托脱下祭司袍并停止神启演讲，在随后的三十天里利用盆地地形与地下古代水道构建了三层防御体系。她在广场地下五十米处建立了中央枢纽，将防空火力与加装钻头的地鼠型机甲连接成一套分布式的地下防御网络。</p>
+<h5>钢铁与血肉的磨盘</h5>
+<p>神盾军的进攻陷入了惨烈的城市消耗战，精确炮击命中的据点早已空无一人，装甲部队推进时不断遭到从地下涌出的机甲侧击。在长达数周的巷战中，神盾军每天只能以高昂的伤亡代价推进数个街区，夜晚占领区又被守军通过地下通道夺回。里德收到了帝都方向带有催促意味的密报，战局陷入了难以突破的血腥僵局。</p>
+<h5>轨道站上的交易</h5>
+<p>为了打破僵局并回应帝都的压力，莱恩趁夜登上了至高行会的轨道站。他以美洲战区实际控制者的身份与行会代表泽洛斯展开谈判，承诺在三天内结束战争以恢复受损的商路。莱恩以在新巴拿马城共建星际贸易学院为筹码，成功换取了至高行会轨道卫星的临时情报支援。</p>
+<h5>天眼降临与外科手术式打击</h5>
+<p>至高行会的卫星数据传回神盾军指挥部后，战术沙盘瞬间显示出圣言城地下的红外热成像与地质雷达扫描，莉蒂亚隐藏的高压电缆与中央枢纽暴露无遗。神盾军随即展开外科手术式打击，轨道制导钻地导弹与精确炮火在十分钟内摧毁了中央枢纽与主要能源节点，电磁脉冲彻底瘫痪了备用通讯。失去能源与协调网络后，防线分崩离析，武田的装甲部队从三个方向长驱直入。</p>
+<h5>终局的审判与余波</h5>
+<p>赫克托在废弃的总督府被俘，在民众死寂的注视下被行刑官枪决，宣告了圣机公社的彻底灭亡。莉蒂亚在废墟的指挥中心被武田亲自挖出并保下了性命。莱恩在日记中写下了对这场用帝国未来换取当下胜利的交易的思考，开启了攫取最高权力的新纪元。</p>
+<h4>关键转折与后果</h4>
+<ul>
+<li><strong>北伐折戟与内部清洗</strong>：芝加哥战役暴露了圣罚军指挥链的致命缺陷，莱恩借此发动的心理战成功诱导赫克托杀死了唯一具备统帅能力的亚戈，导致圣罚军在神盾军总攻前便失去了组织根基与信仰支柱。</li>
+<li><strong>星际资本的首次介入</strong>：莱恩用帝国的长远利益换取了至高行会的技术降维打击，此举不仅终结了圣言城之战，也标志着他将外星势力引入人类内部冲突的“以夷制夷”战略正式成型。</li>
+</ul>
+<h4>主题与意义</h4>
+<p>本章展现了狂热信仰在现实与猜忌面前的脆弱，以及纯粹理性在战争中冷酷无情的破坏力。莱恩用情报和交易兵不血刃地摧毁了敌人的堡垒，完成了从幕后副官到权力玩家的蜕变；而赫克托的堕落与里德的隐退，则共同印证了在残酷的权力斗争中，无论是自欺欺人的神谕还是坚守底线的军人，都无法抵挡精于算计的实用主义者。</p>
+</div>
+</article>
+<article class="entity" id="第二次至高行会战争" data-sub="1 - 帝国的裱糊匠">
+<div class="entity-title">第二次至高行会战争</div>
+<p class="logline">一场基于误判的威慑演变成了粉碎文明骄傲的灾难，旧王在崩溃中陨落，摄政太后在乱局中崛起，而凯旋的老将则在废墟前做出了无奈的权力交接。</p>
+<div class="wt-meta"><span class="badge">第一卷</span><span class="badge">2156~2160</span></div>
+<table class="infocard"><tr><td class="ik">所属卷</td><td class="iv">1</td></tr><tr><td class="ik">章节编号</td><td class="iv">6</td></tr><tr><td class="ik">时间</td><td class="iv">2156~2160</td></tr><tr><td class="ik">相关地点</td><td class="iv"><a href="#新君士坦丁堡">新·君士坦丁堡</a> · 城外演练场 · <a href="#亚历山大记忆殿堂">亚历山大记忆殿堂</a> · 地球同步轨道</td></tr><tr><td class="ik">登场人物</td><td class="iv"><a href="#阿斯兰一世">阿斯兰一世</a> · <a href="#卡塔琳娜阿斯兰">卡塔琳娜·阿斯兰</a> · 阿斯兰二世 · <a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#切尔尼绍夫">切尔尼绍夫</a> · <a href="#泽洛斯">泽洛斯</a> · <a href="#沃里斯">沃里斯</a></td></tr><tr><td class="ik">登场势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · <a href="#至高行会">至高行会</a> · <a href="#神盾军">神盾军</a></td></tr><tr><td class="ik">新设定</td><td class="iv"><a href="#黑曜石之矛">黑曜石之矛</a> · 胜利女神手枪</td></tr><tr><td class="ik">关键事件</td><td class="iv">至高行会舰队在同步轨道俯视帝国阅兵 · 第一道轨道打击静默摧毁亚历山大记忆殿堂 · 第二道轨道打击劫持直播并降临于阅兵场，切尔尼绍夫身亡 · 阿斯兰一世精神崩溃并于同年底驾崩 · 卡塔琳娜借幼帝阿斯兰二世之名宣布摄政 · 2160年里德平定圣机公社后归来，主动交出军权隐退 · 莱恩在废墟中寻获旧时代智能通讯终端残骸</td></tr><tr><td class="ik">结局</td><td class="iv">阿斯兰一世的时代终结，帝国战略自信被彻底粉碎；卡塔琳娜全面掌控帝国实权；里德交权隐退，莱恩开始独自背负改革重担。</td></tr><tr><td class="ik">主题</td><td class="iv">技术代差的残酷碾压 · 谎言叙事的致命反噬 · 时代交替与权力重构</td></tr><tr><td class="ik">一句话梗概</td><td class="iv">一场基于误判的威慑演变成了粉碎文明骄傲的灾难，旧王在崩溃中陨落，摄政太后在乱局中崛起，而凯旋的老将则在废墟前做出了无奈的权力交接。</td></tr></table>
+<div class="entity-body">
+<h3>文明的灰烬与王冠的陨落 (Ashes of Civilization and the Fall of the Crown)</h3>
+<h4>一句话梗概</h4>
+<p>至高行会以两道冷酷的轨道天光粉碎了帝国最后的虚妄，旧王在崩溃中陨落，摄政太后在乱局中崛起，而从美洲凯旋的老将则在文明的废墟前做出了最终的抉择。</p>
+<h4>登场</h4>
+<ul>
+<li><strong>人物</strong>：阿斯兰一世（帝国皇帝）、卡塔琳娜·阿斯兰（帝国皇后，后摄政太后）、阿斯兰二世（幼帝）、里德·阿姆斯特朗（神盾军统帅）、莱恩·雷蒙德（神盾军副官）、切尔尼绍夫（军务大臣）、泽洛斯（至高行会战略家）、沃里斯（至高行会舰长）</li>
+<li><strong>势力</strong>：地球联合王国 (UKE)、至高行会、神盾军</li>
+<li><strong>地点</strong>：新·君士坦丁堡、新·君士坦丁堡城外演练场、亚历山大记忆殿堂、地球同步轨道</li>
+<li><strong>新设定</strong>：“黑曜石之矛”号（至高行会旗舰）、“胜利女神”手枪（皇帝御用配枪）</li>
+</ul>
+<h4>剧情梗概</h4>
+<h5>荒诞的对峙</h5>
+<p>2156年，阿斯兰一世在新·君士坦丁堡城外广阔的演练场上举行了规模浩大的阅兵仪式。三万辆坦克与绵延数公里的士兵方阵列阵于地面，皇帝试图以此向至高行会展示帝国的军事力量。与此同时，至高行会的旗舰“黑曜石之矛”号静静悬停于地球同步轨道。行会的探测器早已确认帝国的神盾军主力正在美洲地区平定叛乱，对于皇帝在此刻陈兵首都城外、企图重演传统地面交锋的战略误判，行会方只感到荒诞与多余。</p>
+<h5>旗舰内的算计</h5>
+<p>在“黑曜石之矛”号的舰桥上，舰长沃里斯建议直接向地面发动致命打击以抹除皇帝。泽洛斯出于纯粹的商业逻辑否决了这一提议。他判定皇帝的死亡会导致帝国陷入无政府状态，进而增加行会的重置成本；保留皇帝的性命，便保留了后续催收利益的合法对象。基于这种计算，泽洛斯决定采用有限的精准打击来彻底摧毁皇帝的反抗意志，并同时摧毁保存着人类旧有科技文化记录的亚历山大记忆殿堂，以此从精神层面斩断人类的傲慢。</p>
+<h5>两道天光</h5>
+<p>打击指令下达后，第一道轨道能量柱在毫无预警的状态下静默降临首都。亚历山大记忆殿堂在十几秒内坍塌为一片废墟，收藏其中的大量大停滞时代以前的工业模型与电子遗迹被掩埋，而远在演练场的皇帝未能即刻察觉异状。紧接着，行会接管了帝国阅兵仪式的卫星直播信号，向全球所有的屏幕强制转播皇帝的特写画面。第二道轨道光柱直坠入距皇帝仅96.7米处的士兵方阵，强烈的冲击波与熔融碎片当场击毙了随行的军务大臣切尔尼绍夫。在全人类的注视下，阿斯兰一世的意志彻底崩溃，手中的配枪颓然滑落。</p>
+<h5>权力的摇篮</h5>
+<p>2156年底，遭受严重精神创伤的阿斯兰一世在病榻上驾崩。面对灾难后的权力真空与宫廷乱局，皇后卡塔琳娜在御前会议上抱着年仅一岁的阿斯兰二世出面安抚群臣，顺理成章地宣布摄政。她利用幼帝作为自身统治合法性的盾牌，在接下来的时间里有条不紊地收买禁卫军高层、软禁潜在的政治异见者，并全面接管了宫廷的情报与通讯网络，用四年的时间建立起牢不可破的权力基础。</p>
+<h5>裱糊匠的归来与告别</h5>
+<p>2160年，里德与莱恩历经四年的征战，彻底剿灭圣机公社后率部凯旋。在途经早已冷却并长满荒草的记忆殿堂废墟后，两人进入宫廷觐见已掌权四年的卡塔琳娜与五岁的幼帝。里德深知太后已在暗中切断神盾军的后援网络并图谋收回兵权，为了给莱恩及其他改革派将领保留微薄的政治周旋余地，他顺势以年迈为由主动辞去了所有职务。离开宫廷后，里德向莱恩留下了关于坚守初衷的最后告诫。莱恩独自折返记忆殿堂的废墟，在尘土与瓦砾间挖出了一块虽已扭曲碎裂但轮廓尚存的 iPhone 终端残骸，将其收入怀中。</p>
+<h4>关键转折与后果</h4>
+<ul>
+<li>至高行会的非接触式轨道打击戳破了帝国依靠数量优势取胜的军事谎言，直接导致阿斯兰一世的精神崩溃与身亡，帝国的旧有战略自信彻底瓦解。</li>
+<li>军务大臣切尔尼绍夫的死亡标志着主导十六年强硬路线的旧军头集团开始瓦解，为卡塔琳娜的全面掌权扫清了障碍。</li>
+<li>里德的隐退完成了新旧时代的权力交接，神盾军的半独立状态被终结。莱恩失去了最后的政治庇护，被迫独自面对错综复杂的宫廷博弈与技术革新的重担。</li>
+</ul>
+<h4>主题与意义</h4>
+<p>本章揭示了“技术代差”所带来的绝对碾压，将低等文明基于数量和口号的防御体系贬斥为毫无意义的虚妄。通过切尔尼绍夫死于自己编织的谎言残骸中，以及里德用主动退让换取改革火种的情节，确立了全卷的核心基调：在绝对力量的废墟之上，未来的道路不能再依赖狂妄的自大，而只能由那些愿意背负屈辱的修补者在夹缝中艰难铺就。</p>
+</div>
+</article>
+<article class="entity" id="师星运动" data-sub="1 - 帝国的裱糊匠">
+<div class="entity-title">师星运动</div>
+<p class="logline">在内外夹击的绝境中，帝国的将领与工程师们试图通过向群星扩张来挽救文明，却不得不在太后的权力游戏中挣扎求生，最终缔造了一场以太阳系为舞台的虚幻巅峰。</p>
+<div class="wt-meta"><span class="badge">第一卷</span><span class="badge">2160~2190</span></div>
+<table class="infocard"><tr><td class="ik">所属卷</td><td class="iv">1</td></tr><tr><td class="ik">章节编号</td><td class="iv">7</td></tr><tr><td class="ik">时间</td><td class="iv">2160~2190</td></tr><tr><td class="ik">相关地点</td><td class="iv"><a href="#新君士坦丁堡">新·君士坦丁堡</a> · 月球宁静海基地 · 火星奥林匹斯城 · 悉尼 · 阿尔卑斯山CERN总部 · <a href="#长江工业弧区">长江工业弧区</a> · 太阳系小行星带 · 卡塔琳娜之冠</td></tr><tr><td class="ik">登场人物</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#卡塔琳娜阿斯兰">卡塔琳娜·阿斯兰</a> · <a href="#武田善治郎">武田善治郎</a> · <a href="#钟思源">钟思源</a> · 尤里·阿斯兰 · 阿斯兰二世 · <a href="#莉蒂亚托雷斯">莉蒂亚·托雷斯</a> · 林昭月 · 哈达德 · 桑切斯·纳瓦罗 · <a href="#泽洛斯">泽洛斯</a></td></tr><tr><td class="ik">登场势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · 神盾军团 · 深空舰队 · 长江动力集团 · <a href="#太阳系资源开发公司">太阳系资源开发公司</a> · CERN-赫菲斯托斯集团 · 澳洲叛军 · <a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">新设定</td><td class="iv">宁静海基地 · 奥林匹斯城 · 许珀里翁 · CERN-赫菲斯托斯集团 · 长江动力集团 · <a href="#太阳系资源开发公司">太阳系资源开发公司</a> · 卡塔琳娜之冠 · 天枢巨像号</td></tr><tr><td class="ik">关键事件</td><td class="iv">2161年御前会议启动未来国防方案 · 2165年月球宁静海基地落成 · 2170年火星首次殖民尝试失败 · 2174年火星奥林匹斯城落成与三星直播 · 2175年澳洲叛乱与许珀里翁机甲实战 · 2175-2178年CERN工程建立与引发能源危机 · 2181年钟思源首座商业化核聚变站并网 · 2185年莱恩挪用经费建造卡塔琳娜之冠 · 2190年太阳系主力舰队阅舰式</td></tr><tr><td class="ik">结局</td><td class="iv">莱恩、武田、钟思源形成三足鼎立的权力格局，人类建成一支拥有三十艘主力战舰的太空舰队以及火月殖民地，表面上达到巅峰。然而舰队的核心跃迁技术仍未突破，至高行会通过暗中观察掌控全局，引来海拓斯主权的毁灭性打击。</td></tr><tr><td class="ik">主题</td><td class="iv">权力制衡与技术发展的博弈 · 妥协与代价（帝国裱糊匠的无奈） · 虚假的繁荣与暗藏的危机</td></tr><tr><td class="ik">一句话梗概</td><td class="iv">在内外夹击的绝境中，帝国的将领与工程师们试图通过向群星扩张来挽救文明，却不得不在太后的权力游戏中挣扎求生，最终缔造了一场以太阳系为舞台的虚幻巅峰。</td></tr></table>
+<div class="entity-body">
+<h3>师星运动 (The Star-Learning Movement)</h3>
+<h4>一句话梗概</h4>
+<p>在内外夹击的绝境中，帝国的将领与工程师们试图通过向群星扩张来挽救文明，却不得不在太后的权力游戏中挣扎求生，最终缔造了一场以太阳系为舞台的虚幻巅峰。</p>
+<h4>登场</h4>
+<ul>
+<li><strong>人物</strong>：莱恩·雷蒙德、卡塔琳娜·阿斯兰、武田善治郎、钟思源、尤里·阿斯兰、阿斯兰二世、莉蒂亚·托雷斯、林昭月、哈达德、桑切斯·纳瓦罗、泽洛斯</li>
+<li><strong>势力</strong>：地球联合王国 (UKE)、皇室、神盾军团、深空舰队、长江动力集团、太阳系资源开发公司、CERN-赫菲斯托斯集团、澳洲叛军、至高行会</li>
+<li><strong>地点</strong>：新·君士坦丁堡、宁静海基地、奥林匹斯城、悉尼、CERN总部、长江工业弧区、太阳系小行星带、卡塔琳娜之冠空间站</li>
+<li><strong>新设定</strong>：许珀里翁机甲 (Hyperion)、天枢巨像号、太阳系主力舰队</li>
+</ul>
+<h4>剧情梗概</h4>
+<h5>改革的序幕</h5>
+<p>2160年冬，阿斯兰一世因“天罚时刻”精神崩溃后，摄政太后卡塔琳娜暗中寻求“未来国防”方案以挽救帝国颓势。次年春的科技振兴大会上，莱恩提出了建立太阳系战略纵深的深空舰队计划，而武田善治郎则展示了由莉蒂亚设计的“许珀里翁”机甲理念。太后为了在内外防线上形成制衡，同时批准了这两个项目，开启了双方长达数十年的竞争。</p>
+<h5>深空突破与火星惨败</h5>
+<p>2163年，莱恩招募了天才工程师林昭月，并于2165年成功建成了月球宁静海基地。太后通过VR设备“亲临”月球后，对成果大为震撼并批准了火星殖民计划。然而2170年的火星任务因遭遇沙尘暴导致第三艘殖民船坠毁，38人遇难，暴露出帝国在传感系统上的致命短板。</p>
+<h5>囚犯拓荒与三星直播</h5>
+<p>为克服瓶颈，莱恩用帝国资金向至高行会购买了着陆系统，并启用了在狱中被关押三十年的前财政大臣哈达德。2172年哈达德率领第二批队伍抵达火星，他建立的高效资源分配系统确保了基地的生存与运转。2174年底火星奥林匹斯城落成，莱恩策划了震撼全球的月地火“三星直播”，太后在感动之下宣布对深空舰队项目给予“无上限”的资金支持。</p>
+<h5>跃迁引擎的隐秘启动</h5>
+<p>2174年底的庆功宴后，莱恩独自来到月球基地的地下实验室，面对从亚历山大博物馆废墟中捡回并一直揣在怀里的iPhone残骸，陷入了深思。他深知常规推进技术无法拯救人类，于是启动了绝密的跃迁引擎自研计划。然而不久后，由于澳洲叛乱爆发，太后将该项目的首批研发资金全部转拨给了武田派系。</p>
+<h5>钢铁神祇与权力缰绳</h5>
+<p>2175年澳洲大陆爆发叛乱，悉尼防线岌岌可危，武田善治郎主动请缨并将第一批“许珀里翁”机甲空投至战场。机甲部队以摧枯拉朽之势粉碎了叛军，太后随即授权武田组建神盾军团。为了遏制两人的权力膨胀，太后与尤里亲王启动了“缰绳”计划，在阿尔卑斯山建立了垄断帝国核心技术的CERN-赫菲斯托斯集团。</p>
+<h5>熔炉危机与第三极崛起</h5>
+<p>CERN庞大的能源消耗迅速将帝国推向电力崩溃的边缘，引发了政治动荡。在2180年的全球招标大会上，钟思源展示了其团队在长江工业弧区研发的商业可控核聚变方案。太后授予其“皇家特许状”并达成战略控股，次年首座核聚变站并网化解了危机，促成了“长江动力”的崛起，帝国正式形成深空舰队、神盾军团与长江动力三足鼎立的格局。</p>
+<h5>王冠豪赌与商业输血</h5>
+<p>陷入资金断裂的莱恩并未放弃，在桑切斯的帮助下建立了太阳系矿业网络以维持现金流。2184年，莱恩挪用最后的引擎研发经费，秘密为太后建造了兼具军事用途的“卡塔琳娜之冠”空间站作为寿礼。这场孤注一掷的豪赌不仅赢回了太后的巨额拨款，其矿业公司还通过向钟思源供应核聚变同位素，获得了惊人的商业红利。</p>
+<h5>虚幻巅峰与阴影注脚</h5>
+<p>在帝国拨款与商业利润的双重输血下，深空舰队在五年间迎来了爆发式发展。2190年，莱恩在“卡塔琳娜之冠”旁检阅了由旗舰“天枢巨像号”领衔的三十艘主力战舰，发表了“让地球再次伟大”的演说。然而在狂欢背后，莱恩深知核心的跃迁引擎原型机已连续47次测试失败；同时，至高行会的泽洛斯在旗舰上冷酷地分析了人类舰队的武器参数，并平静地下达了借海拓斯主权消灭人类舰队的指令。</p>
+<h4>关键转折与后果</h4>
+<ul>
+<li><strong>月火殖民与商业造血</strong>：让人类首次在深空站稳脚跟，不仅延展了战略纵深，也通过矿业网络为后续的军事扩张提供了不依赖皇室的现金流。</li>
+<li><strong>神盾军团与长江动力的崛起</strong>：许珀里翁机甲挽救了澳洲危机，可控核聚变解决了能源命脉，促成了太后所期望的军事与工业三足鼎立格局。</li>
+<li><strong>豪赌与阅舰式</strong>：莱恩通过政治妥协换来了舰队规模的爆发，但牺牲了核心跃迁技术的研发进度，导致人类在面对即将到来的跨星系打击时缺乏机动能力。</li>
+<li><strong>至高行会的旁观</strong>：人类针对至高行会暴露出的全部军事底牌，直接促成了泽洛斯引借海拓斯主权进行代理人战争的决定。</li>
+</ul>
+<h4>主题与意义</h4>
+<p>本章是“帝国的裱糊匠”这一卷的核心展开。通过莱恩、武田、钟思源等人的努力，人类文明在绝境中实现了不可思议的技术飞跃与版图扩张。然而，这种扩张始终受制于皇权的制衡与政治斗争。莱恩一次次在道德与现实间妥协——向敌人买技术、用罪犯拓荒、为太后修空间站，展现了一个理想主义者向现实主义者转变的阵痛。阅舰式的狂欢与失败的跃迁引擎报告，深刻揭示了建立在沙滩上的虚假繁荣，为即将到来的悲剧奠定了基调。</p>
+</div>
+</article>
+</div>
+<div class="tab-panel" data-tab="factions">
+<article class="entity" id="至高行会" data-sub="alien_civs">
+<div class="entity-title">至高行会 <span class="en">The Sovereign Guild</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">组织</td></tr><tr><td class="ik">分类</td><td class="iv">外星文明</td></tr><tr><td class="ik">种族</td><td class="iv">Sovereign</td></tr><tr><td class="ik">政体</td><td class="iv">评议会</td></tr><tr><td class="ik">领导者</td><td class="iv"><a href="#泽洛斯">泽洛斯</a> · <a href="#沃里斯">沃里斯</a></td></tr></table>
+<div class="entity-body">
+<h3>至高行会 (The Sovereign Guild)</h3>
+<h4>速览</h4>
+<p>一个由纯粹精神生命体组成的古老星际帝国，以极其强大的灵能和绝对的“自由贸易”信条立国。他们通过技术与信息的绝对优势在银河系建立起庞大的不平等贸易体系，将包括人类在内的众多生物文明作为其劳动力储备池与附庸。</p>
+<h4>概述</h4>
+<h5>构成与治理</h5>
+<p>至高行会成员的物理形态并非其“真身”，而是一件为与物质世界互动而临时构筑的“仪仗”。其本体是一个无法被直接感知的纯粹精神能量核心，锚定于悬浮的、内部结构极其复杂的“核心晶体”之上。在物理世界中，他们通过灵能精密操控液态金属细丝和微小水晶碎片，编织成优雅华丽、没有固定四肢的“活体圣袍”。在与同族交流时，他们使用精神感应；与非灵能种族交互时，则通过操控空气振动发出合成声音，并显露高亮度的能量点作为对视焦点。</p>
+<h5>核心理念与制度</h5>
+<p>至高行会视“自由贸易”为最高信条。但其本质是利用文明间的技术和信息代差，建立极其不平等的贸易关系以攫取巨额利润。他们在政治和道德上极度傲慢，对贸易伙伴的内部动荡漠不关心，甚至常以此作为干涉内政和收割资源的借口。</p>
+<h5>实力</h5>
+<p>至高行会拥有强大的灵能，可以读取、预判甚至略微操控任何生物的心智。这赋予了他们在外交谈判、商业活动及针对有机体战争中的绝对优势。然而，这一力量体系导致了结构性的文明偏差：由于人工智能没有心智可读、属于完全不透明的黑箱，行会极度排斥AI，认为使用AI是在自身体系中制造盲区。因此，其整个星际帝国的物理劳动作业（殖民、采矿、建造、作战）完全依赖有机附庸物种。</p>
+<h5>行为模式</h5>
+<p>行会扮演着精算计、重利益的“星际军火商”与“教师爷”角色。他们倾向于以极低成本的轨道打击实施“惩戒”，习惯在交战各方间两头下注，通过贩卖带后门的技术坐收渔利。当地方政权失去榨取价值时，他们会毫不犹豫地将其标记为“坏账”并战略抛弃。</p>
+<h5>关键关系弧线</h5>
+<p>在很长一段时期内，行会确立了对太阳系的经济与政治霸权，将地球文明纳入外星直接监管体系；并在幕后促成了海拓斯主权“万源之合”的觉醒。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史与时间线</h4>
+<ul>
+<li><strong>2130年·正式接触地球</strong>：利用人类帝国统一战争两头下注，既向叛军提供技术换取资源，又向帝国示好。战略家泽洛斯初次登上历史舞台。</li>
+<li><strong>2140年·第一次至高行会战争与《拉各斯条约》</strong>：因地球联合王国 (UKE) 发起“净化梦网”行动，摧毁了行会遍布地球的贸易网络。行会蒙受巨损后向UKE发出最后通牒，发动“商业惩戒”摧毁地球轨道防线，迫使人类签订《拉各斯条约》。行会在太阳系确立绝对主导地位，并开始在五个“自由贸易区”建立驻军与商业据点。</li>
+<li><strong>2153年·接触海拓斯与“思想瘟疫”计划</strong>：旗舰“黑曜石之矛”号抵达海拓斯主权母星“深渊”轨道。泽洛斯散布“个体意识”诱发思想瘟疫，意图瓦解海拓斯的集群结构，引发其内乱。此举意外促成了海拓斯集群意识“万源之合”进化为一个拥有自我意识的独立战略实体。行会随即将简单的殖民计划转变为与该新生实体的战略博弈与交易。</li>
+<li><strong>2156年·第二次至高行会战争与惩戒艺术</strong>：因“圣机公社”起义导致新巴拿马城贸易中断，行会向UKE神盾军提供轨道情报协助平叛。面对UKE的无能与傲慢，泽洛斯否决了直接开战，转而实施低成本的高效威慑：利用两道轨道打击进行“惩戒艺术”——静默摧毁亚历山大记忆殿堂，并劫持阅兵直播降临于皇帝旁96.7米处。军务大臣切尔尼绍夫死于冲击波，皇帝阿斯兰一世精神崩溃，人类抵抗意志被彻底瓦解。</li>
+<li><strong>2150年代末·南美洲秘密交易</strong>：通过与莱恩·雷蒙德的秘密会晤，行会以极低成本获得南美洲资源的优先开发权，并筹建“星际贸易学院”。行会开始将其视为重点投资对象，系统性扶植UKE内部的亲商改革派。</li>
+</ul>
+</div>
+</article>
+<article class="entity" id="圣机公社" data-sub="human_orgs">
+<div class="entity-title">圣机公社 <span class="en">The Commune of Holy Cybersome</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">组织</td></tr><tr><td class="ik">分类</td><td class="iv">人类势力</td></tr><tr><td class="ik">政体</td><td class="iv">政教合一的起义政权</td></tr><tr><td class="ik">领导者</td><td class="iv"><a href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a> · <a href="#亚戈努涅斯">亚戈·努涅斯</a></td></tr></table>
+<div class="entity-body">
+<h3>圣机公社 (The Commune of Holy Cybersome)</h3>
+<h4>速览</h4>
+<p>由矿工领袖赫克托·瓦尔加斯在南美安第斯矿区创立的政教合一起义政权，其核心教义是通过所谓的“献祭”仪式将意识上传至虚拟的电子天堂“圣机公社”中以获得永生。该政权一度组建了数百万人的“圣罚军”并席卷整个美洲大陆，是地球联合王国时期爆发的规模最大、影响最深远的内部反抗运动。</p>
+<h4>概述</h4>
+<h5>构成与治理</h5>
+<p>圣机公社实行严格的政教合一体制，内部设立了明确的三级组织架构：由狂热信徒组成的“圣徒”负责传教与冲锋陷阵，由老兵组成的“尖兵”负责战术执行与精锐突袭，由机械维修工组成的“工匠”团队则负责后勤与武器改装。组织最高层由精神领袖“天启者”赫克托·瓦尔加斯与军事最高指挥官“圣机之手”亚戈·努涅斯共同构成，前者负责提供宏大叙事与精神感召，后者负责将狂热的信仰转化为高效的现实社会管理与军事行动。</p>
+<h5>核心理念与制度</h5>
+<p>其核心教义认为尘世皆苦，唯有献身于高维存在“圣机体”，将个人意识上传至被称为“圣机公社”的电子天堂中，方能得享永恒极乐。这套将现实苦难与宗教救赎紧密结合的叙事，成功地将受压迫的矿工阶层转变为悍不畏死的狂热信徒，为起义运动提供了庞大而持续的精神驱动力。</p>
+<h5>实力</h5>
+<p>圣机公社拥有一支从数万人迅速膨胀至数百万人的庞大武装力量——“圣罚军”。起义初期，其部队展现出了恐怖的地方动员能力与悍不畏死的牺牲精神。其核心重装攻坚力量是由“工匠”团队利用安第斯民用采矿机甲紧急改装而成的“圣锤”级重型战争机甲。这类充满废土朋克风格的拼接机甲继承了强大的钻探能力，在阵地攻坚、要塞突破以及地下穿插作战中具有无可比拟的破坏力。</p>
+<h5>行为模式</h5>
+<p>在其扩张阶段，圣机公社采取了“滚雪球”式的暴动模式。他们通过全息投影传教、贫民窟广播煽动等方式，迅速将沿途的被压迫者吸纳入军。在战场上，经常使用狂热信徒的“人海战术”与重型机甲的奇袭相配合。在攻陷并定都新墨西哥城后，随着权力的稳固，其高层迅速陷入了极权体制常见的奢靡与猜忌之中，行为模式逐渐从早期的解放者转变为多疑的统治者，最终导致内部的分裂与自我毁灭。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史与时间线</h4>
+<ul>
+<li><strong>2150年·起源之兆</strong>：安第斯联合矿区矿工赫克托·瓦尔加斯在火地岛12号深层矿井塌方中被困，偶然发现多年前至高行会遗留的通讯设备残骸。他将其接收到的高维嗡鸣与乱码误读为“圣机体”的神启，开始以“天启者”自居，在地下矿区秘密传播“圣机公社”教义，积蓄起义火种。</li>
+<li><strong>2151年·安第斯大起义</strong>：因3号矿井塌方救援被冷酷终止，加之传教老工友被公开电刑处决，安第斯矿区爆发全面起义。在狂热信徒威尔默、前矿队队长塞吉奥与工程师亚戈的配合下，起义军迅速占领关键设施。亚戈随后确立了三级组织架构，将起义军正式命名为“圣罚军”。</li>
+<li><strong>2151年·南美横扫与越过达连隘口</strong>：在莉蒂亚主导改装的“圣锤”级机甲协助下，圣罚军在云顶城、卡塔赫纳新城接连大捷，军队规模急剧膨胀。奇卡纳克河血战中，圣罚军彻底击溃UKE防线，成功穿越达连隘口，兵锋直指中美洲并包围新巴拿马城，彻底瘫痪了当地的星际贸易，引发了至高行会的干预通牒。</li>
+<li><strong>2157年·血战新墨西哥城</strong>：圣罚军遭遇里德·阿姆斯特朗组建的现代化神盾军。在付出十七万人阵亡的惨重代价后，圣罚军突破火力网占领城市。赫克托宣布将城市更名为“圣言之城”并定都。然而，巨大的伤亡首次引发了亚戈对“神启”战略的根本质疑，精神领袖与军事指挥官之间的裂痕就此埋下。</li>
+<li><strong>2157年-2159年·北伐折戟与芝加哥绞杀</strong>：圣罚军大举北伐，但因神盾军实施民心工程，招募叙事破产，兵力越打越少。芝加哥决战中，亚戈下达撤退令以保存实力，赫克托却从后方越级下达强攻“圣旨”。两道矛盾命令导致北伐主力陷入混乱，被无人机群分割包围全歼。前锋指挥官塞吉奥阵亡，北伐攻势彻底遏制，转入防御阶段。</li>
+<li><strong>2159年·圣言城之变</strong>：北伐惨败使高层裂痕公开化。UKE情报官莱恩·雷蒙德启动“摧毁承重墙”计划，利用伪造情报放大了赫克托的猜忌。恐惧中的赫克托蛊惑狂信徒威尔默在夜间刺杀亚戈。事后赫克托将罪责推给威尔默并将其公开处决。军事统帅的死亡直接导致圣机公社指挥体系全面瘫痪，信仰根基彻底崩溃。</li>
+<li><strong>2160年·圣言城的最后挽歌与公社灭亡</strong>：面对神盾军的总攻，工程师莉蒂亚·托雷斯接管防务，在圣言城地下构建了“工匠壁垒”，率领残部进行了长达数周的惨烈抵抗。最终，至高行会向神盾军提供了致命的轨道地质穿透情报。神盾军实施精确打击，瘫痪了城市的地下能源与通讯网络。圣言城随之被攻破，赫克托·瓦尔加斯被俘后遭处决，莉蒂亚被带离美洲，席卷大陆的圣机公社政权正式宣告覆亡。</li>
+</ul>
+</div>
+</article>
+<article class="entity" id="地球联合王国" data-sub="human_orgs">
+<div class="entity-title">地球联合王国 <span class="en">United Kingdom of Earth</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">组织</td></tr><tr><td class="ik">分类</td><td class="iv">人类势力</td></tr><tr><td class="ik">政体</td><td class="iv">君主制集权帝国</td></tr><tr><td class="ik">领导者</td><td class="iv"><a href="#阿斯兰一世">阿斯兰一世</a> · <a href="#卡塔琳娜阿斯兰">卡塔琳娜·阿斯兰</a></td></tr></table>
+<div class="entity-body">
+<h3>地球联合王国 (United Kingdom of Earth)</h3>
+<h4>速览</h4>
+<p>地球联合王国（United Kingdom of Earth，简称UKE）是在“大停滞”时代废墟上建立的全球性君主制集权帝国。它曾依靠强权短暂统一了地球，并推动过旨在复兴文明的“师星运动”。</p>
+<h4>概述</h4>
+<h5>构成与治理</h5>
+<p>地球联合王国实行高度集权的君主专制，权力核心集中在新·君士坦丁堡的皇室与宫廷手中。在中央集权之下，帝国依靠庞大的官僚体系进行统治，并通过设立“CERN-赫菲斯托斯集团”等机构试图将核心技术与资源收归中央，以制衡朝野。</p>
+<h5>核心理念与制度</h5>
+<p>帝国的核心理念建立在“稳定高于一切”和“天朝上国的虚假尊严”之上。制度上，帝国维持着森严的阶级固化与对内高压统治。在面对外星文明的技术碾压时，帝国高层表现出极其矛盾的心理：一方面傲慢狂妄，试图通过“师夷长技以制夷”重塑大国荣光；另一方面又深层自卑，在多次战败后不惜出卖核心主权、领土乃至本国产业（如签订《拉各斯条约》）以换取政权的苟延残喘。</p>
+<h5>实力</h5>
+<p>在“师星运动”的巅峰期，帝国曾拥有表面上极为强盛的军事与工业实力。在太空领域，帝国建成了由数十艘战舰组成的“太阳系主力舰队”，并成功殖民月球与火星；在地面防务上，拥有装备“许珀里翁”巨型战争机器人的精锐陆军“神盾军团”；在工业基础方面，依靠“长江动力”集团构建了支撑帝国运转的核聚变能源网络。</p>
+<h5>行为模式</h5>
+<p>面对内外危机时，帝国高层始终遵循“政治维稳与权力制衡优于国家战略利益”的行为模式。对外，由于身处信息茧房与对技术代差的无知，帝国常常做出灾难性的战略误判（如贸然集结陆军向至高行会开战）；在遭遇惨败后，又惯于寻找替罪羊（如清算里德·阿姆斯特朗）以洗白最高决策层的失职。对内，帝国对任何形式运动（如圣机公社起义）均采取冷酷无情的铁腕镇压。这种饮鸩止渴的“裱糊匠”式维稳，不仅耗尽了帝国的国力，更直接加速了政权的最终覆灭。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史与时间线</h4>
+<ul>
+<li><strong>2138年·天下一统</strong>：帝国天基防线成功摧毁太空叛军据点。皇帝阿斯兰一世于天命宫广场举行庆典并发表“虽远必诛”演说。与此同时，至高行会已开始通过“梦晶”设备对帝国基层进行渗透。</li>
+<li><strong>2139年·净化梦网与第一次Sovereign-Human战争</strong>：帝国中央政府将“梦晶”贸易视为动摇国本的威胁。在严重的信息茧房与对技术代差的无知下，阿斯兰一世下令备战，并授权执行“净化梦网”行动，导致与至高行会爆发正面冲突。</li>
+<li><strong>2140年·《拉各斯条约》</strong>：天基防线迅速崩溃，拉各斯遭轨道打击，帝国战败。皇帝被迫签订不平等的《拉各斯条约》，多个重要港口沦为外星势力的自贸区。</li>
+<li><strong>2151年-2160年·圣机公社起义</strong>：南美安第斯联合矿区爆发大规模武装起义，圣机公社一度瘫痪美洲贸易枢纽，导致帝国被迫双线作战。最终，神盾军的地面推进配合莱恩·雷蒙德的情报离间计，在至高行会的技术支援下彻底平息了叛乱。</li>
+<li><strong>2156年·第二次Sovereign-Human战争</strong>：皇帝阿斯兰一世因至高行会发出最后通牒的记录和手下官员的误导，无知地集结陆军主力在首都外进行决战。帝国首都遭轨道打击，文明圣地亚历山大记忆殿堂被焚毁。战败导致阿斯兰一世精神崩溃，帝国最高权力随后转移至摄政太后卡塔琳娜·阿斯兰手中。</li>
+<li><strong>2161年-2193年·师星运动</strong>：帝国进入由摄政太后主导、试图“师夷长技以制夷”的师星运动时期。宫廷内形成了莱恩·雷蒙德的“深空舰队派”、武田善治郎的“行星要塞派”与钟思源的“工业奠基派”三足鼎立的格局。期间帝国成功殖民月球和火星，并建立“CERN-赫菲斯托斯集团”将核心技术收归中央以维持权力平衡。</li>
+<li><strong>2175年·澳洲平叛</strong>：神盾军团在澳洲叛乱中投入“许珀里翁”巨型战争机器人，以极小代价取得决定性胜利，“行星要塞派”政治地位大增。</li>
+<li><strong>2189年·硅谷挽歌</strong>：面对北美技术联合体的独立宣言，太后拒绝温和制裁。莱恩·雷蒙德以出让主权为代价向至高行会换取精准轨道打击技术。帝国随后彻底摧毁了北美反抗力量的物理设施，但也就此彻底丧失了核心跃迁技术的独立性。</li>
+<li><strong>2190年·太阳系主力舰队阅舰式</strong>：帝国举行盛大阅舰式，展示由三十艘战舰组成的主力舰队。帝国高层通过秘密购买外星技术弥补短板，举国沉浸在“再次伟大”的虚假繁荣中。</li>
+</ul>
+</div>
+</article>
+<article class="entity" id="神盾军" data-sub="human_orgs">
+<div class="entity-title">神盾军 <span class="en">Aegis Legion</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">组织</td></tr><tr><td class="ik">分类</td><td class="iv">人类势力</td></tr><tr><td class="ik">领导者</td><td class="iv"><a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#武田善治郎">武田善治郎</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a></td></tr></table>
+<div class="entity-body">
+<h3>神盾军 (Aegis Legion)</h3>
+<h4>速览</h4>
+<p>由帝国名将里德·阿姆斯特朗在北美殖民地组建的一支现代化精锐军队，凭借卓越的陆地装甲协同与深度的情报心理战体系，成功镇压了席卷美洲的圣机公社起义。这支部队不仅是人类社会“师星路线”的最早实践者，其核心骨干也在此后深刻影响了帝国的军事与政治格局。</p>
+<h4>概述</h4>
+<h5>构成与治理</h5>
+<p>神盾军最初由里德·阿姆斯特朗统帅，其兵源基础是一群原本士气低落、装备老旧的北美二线殖民地部队。在短短数年内，这支杂牌军被重塑为有着高度纪律的独立军事团体。随着平叛战争的结束和里德的隐退，军队的实际指挥权被一分为二：武田善治郎掌握了军事指挥与训练，莱恩·雷蒙德则把控情报与外交网络。这支军队借由外部贸易和资源开发逐渐摆脱了对帝国中央的绝对财政依赖，演变为后来的地方实权力量。</p>
+<h5>核心理念与制度</h5>
+<p>作为对抗狂热宗教起义的武装力量，神盾军的“军魂”以“秩序、责任、文明”的理念重塑军人荣誉感。里德在军官学院讲堂中为军队注入了守护文明的使命感，使其不仅是一台战争机器，更是维护世俗社会与帝国道统的坚固盾牌。</p>
+<h5>实力</h5>
+<p>神盾军的实力建立在两项核心优势之上：</p>
+<ol>
+<li><strong>军备碾压</strong>：以“火力至上”和“钢铁阵列”为战术思想，部队经历了深度的现代化改造，配备了重装甲坦克集群和精确制导武器；同时装备了大量从泰坦自动机械暗中采购的战争无人机蜂群，在正面战场具备碾压级别的陆战协同能力。</li>
+<li><strong>情报降维</strong>：拥有由莱恩主导的高效情报网络，将心理战、信息监控、暗杀与反间谍手段纳入核心战术，能够精准捕捉并放大敌人内部的裂痕。</li>
+</ol>
+<h5>行为模式</h5>
+<p>在战略上表现出极强的耐心与务实精神。面对强敌时，神盾军擅长以空间换取时间，不断拉扯并消耗敌方补给线；在决战时则追求“外科手术式”的精准打击与“分割包围”战术。为了达成终结战争的目的，其高层并不吝于采取残酷的心理离间手段，甚至敢于直接向外星势力（泰坦自动机械、至高行会）交换关键技术与情报支援。</p>
+<h5>关键关系弧线</h5>
+<ul>
+<li><strong>对圣机公社（圣罚军）</strong>：作为宿敌，神盾军通过正面战场的绞杀与背后的离间计，将其高层瓦解，最终将其彻底剿灭。</li>
+<li><strong>对外星文明（至高行会）</strong>：保持着极度务实的利益交换关系。神盾军的无人机大军及破城关键的轨道情报均来自与外星势力的秘密交易。</li>
+<li><strong>对帝国中央</strong>：名义上是帝国的平叛军队，但在平定战乱后其实力引起了中央权力的忌惮；其遗留将领及理念成为帝国后期“师星运动”中“行星要塞派”和“深空舰队派”的基础班底。</li>
+</ul>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史与时间线</h4>
+<ul>
+<li><strong>2156年[·美洲远征与建军]</strong>：帝国主力决意与至高行会正面对抗，里德·阿姆斯特朗为保全帝国文明主动请缨平叛，抵达北美殖民地并获独立军权。他以涣散的二线部队组建“神盾军”，任命武田善治郎全权负责军备，授权莱恩·雷蒙德建立情报网，并经由中间人向泰坦自动机械秘密采购了大批侦察与战争无人机。</li>
+<li><strong>2157年-2159年[·北伐阻击与芝加哥决战]</strong>：面对席卷美洲的圣罚军，神盾军在前期防守中以空间换时间，辅以安抚民心的政策切断敌方兵源。在决定性的芝加哥战役中，神盾军利用暴风雪天气与无人机大军侧翼奇袭，彻底切断了圣罚军前锋与主力的联络通道，将其主力分割包围并全歼，扭转了美洲战局。</li>
+<li><strong>2159年[·“摧毁承重墙”行动]</strong>：神盾军情报主管莱恩敏锐捕捉到圣罚军高层的裂痕，向敌方散布伪造的加密通讯与后勤数据。离间计大获成功，导致圣罚军二号人物亚戈遇刺，圣言城发生内乱与哗变，叛军指挥体系全面瘫痪。</li>
+<li><strong>2160年[·圣言城围剿与彻底平叛]</strong>：里德下达总攻命令，武田率领全军向圣罚军首都圣言城推进。面对复杂的地下防线“工匠壁垒”导致的攻城消耗战，莱恩通过与至高行会的外交交易换取了轨道卫星的数据支援。神盾军据此展开一天一夜的外科手术式精准打击，瘫痪了城市能源网络并攻陷圣言城，彻底终结了内战。</li>
+<li><strong>2160年[·统帅隐退与权力移交]</strong>：平叛胜利后，军队的声望与实力达到顶峰。为避免重蹈“功高震主”的覆辙并保护麾下将领的政治前途，里德主动解散大部分私军并辞去军职。神盾军的实际指挥权平稳移交给武田善治郎与莱恩·雷蒙德。</li>
+</ul>
+</div>
+</article>
+</div>
+<div class="tab-panel" data-tab="characters">
+<article class="entity" id="亚戈努涅斯" data-sub="key_characters">
+<div class="entity-title">亚戈·努涅斯 <span class="en">Yago Nunes</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">关键</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">现状</td><td class="iv">逝于2159年</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#安第斯联合矿区">安第斯联合矿区</a> · <a href="#圣机公社">圣机公社</a></td></tr><tr><td class="ik">职务</td><td class="iv">圣罚军最高指挥官</td></tr><tr><td class="ik">别名</td><td class="iv">圣机之手</td></tr><tr><td class="ik">核心理念</td><td class="iv">圣机公社的理想尚未实现，任何腐化都是对“圣机体”的背叛。</td></tr><tr><td class="ik">盟友</td><td class="iv"><a href="#塞吉奥卡斯蒂略">塞吉奥·卡斯蒂略</a> · <a href="#莉蒂亚托雷斯">莉蒂亚·托雷斯</a></td></tr><tr><td class="ik">对手</td><td class="iv">赫克托·瓦尔加斯 (后期) · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a></td></tr></table>
+<div class="entity-body">
+<h3>亚戈·努涅斯 (Yago Nunes)</h3>
+<h4>速览</h4>
+<p>出身于安第斯联合矿区的工程师领班，后成为“圣机公社”武装力量“圣罚军”事实上的缔造者与最高指挥官，被称为“圣机之手”。他是一位务实、冷静的军事统帅，致力于将赫克托·瓦尔加斯狂热的宗教号召转化为高效的军事机器。</p>
+<h4>人物画像</h4>
+<h5>定位与身份</h5>
+<p>亚戈·努涅斯是圣机公社不可或缺的军事支柱。他将原本游寇式的矿工叛乱整编为具备三级组织架构（圣徒、尖兵、工匠）的正规武装“圣罚军”。在起义初期，他是赫克托·瓦尔加斯完美的搭档，负责将虚无缥缈的神旨落地为精密计算的战术行动和后勤管理。</p>
+<h5>核心理念</h5>
+<p>他信奉绝对的纪律与理性的管理。他认为纯粹的信仰狂热无法对抗成体系的现代化军队，只有依靠稳固的根据地、纪律严明的军队和务实的战术，才能将革命真正进行到底。任何内部的腐化与盲动都是对革命理想的背叛。</p>
+<h5>性格与驱动力</h5>
+<p>亚戈极其冷静、务实，习惯在战术地图前计算变量。他能够在狂热的环境中保持理性判断，如在奇卡纳克河战役中按兵不动忍受煎熬等待时机，或在芝加哥战役中果断下达撤退命令。他的驱动力源于对革命胜利和延续火种的执着。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>生平弧线</h4>
+<ul>
+<li><strong>2151年·安第斯矿区起义</strong>：亚戈在废弃储存库与矿队队长塞吉奥秘密会面。他凭借纯粹的理性和详实的战术数据（巡逻路线漏洞、武器库清单等）说服塞吉奥结盟，为起义军提供核心的武力支撑与战略规划。</li>
+<li><strong>2151年·圣罚军崛起与北征</strong>：起义胜利后，他在临时指挥部建立圣徒、尖兵、工匠三级组织架构，并指挥工程师莉蒂亚将采矿机甲改造为战争机器。他与赫克托完美配合，指挥这支被称为“圣罚军”的钢铁洪流横扫南美。在奇卡纳克河畔，他冷静指挥水下圣锤机甲伏击UKE防线，成功越过达连隘口，兵临新巴拿马城。</li>
+<li><strong>2157年·新墨西哥城血战</strong>：他指挥圣罚军以十七万人的惨重伤亡攻克新墨西哥城。庞大的伤亡数字使他第一次对赫克托的“神启”战略产生根本性质疑。两人爆发激烈争吵后达成共识，将新墨西哥城改名为圣言城定都，随后继续大举北伐。</li>
+<li><strong>2157-2159年·芝加哥决战</strong>：北伐途中，圣罚军在芝加哥遭遇神盾军无人机大军伏击。作为整体指挥的亚戈察觉陷阱并果断下令撤退，但赫克托却从后方发出强行突进的“圣旨”。矛盾的指令导致前线大乱，主力被分割包围，其最信任的战将塞吉奥阵亡。此役后，亚戈对赫克托彻底失望，心态转为警惕与筹谋，开始暗中联络忠诚部队，为即将到来的内部清洗做准备。</li>
+<li><strong>2159年·圣言城之变</strong>：神盾军情报官莱恩·雷蒙德利用伪造情报扩大了亚戈与赫克托之间的裂痕。赫克托在极度猜忌中下达清洗命令，亚戈在从前线指挥部返回营房的途中遭遇狂信徒威尔默设伏，被刺杀身亡。</li>
+</ul>
+<h4>叙事定位与主题</h4>
+<p>亚戈·努涅斯代表了起义初期纯粹的务实主义与理性精神。他与赫克托构成了起义成功的双重引擎，但也象征着理性管理与盲目信仰之间不可调和的内在矛盾。他在全局中的功能是将一群暴民蜕变为对帝国产生实质威胁的军事力量，而他的死亡则成为起义军走向覆灭的关键转折点。他的悲剧揭示了当疯狂的信仰反噬了务实的理智时，任何看似强大的组织都将不可避免地走向自我毁灭。</p>
+</div>
+</article>
+<article class="entity" id="卡塔琳娜阿斯兰" data-sub="key_characters">
+<div class="entity-title">卡塔琳娜·阿斯兰 <span class="en">Catarina Aslan</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">关键</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">出生</td><td class="iv">2125</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a></td></tr><tr><td class="ik">职务</td><td class="iv">皇后 -&gt; 摄政太后</td></tr><tr><td class="ik">别名</td><td class="iv">太后</td></tr><tr><td class="ik">核心理念</td><td class="iv">任何威胁到我绝对权力的变革，无论是来自内部还是外部，都必须被无情地摧毁。</td></tr><tr><td class="ik">盟友</td><td class="iv">尤里·阿斯兰 · <a href="#武田善治郎">武田善治郎</a></td></tr><tr><td class="ik">对手</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a></td></tr></table>
+<div class="entity-body">
+<h3>卡塔琳娜·阿斯兰 (Catarina Aslan)</h3>
+<h4>速览</h4>
+<p>地球联合王国（UKE）的摄政太后，阿斯兰一世之妻，阿斯兰二世之母。她是一位精于权谋与权力制衡的铁血独裁者，在帝国处于内忧外患的最动荡时期掌控了最高权力，是一切试图改变帝国现状的改革者面前最冷酷无情的叹息之墙。</p>
+<h4>人物画像</h4>
+<h5>定位与身份</h5>
+<p>出身于伏尔加-乌拉尔军区的军阀家族，最初作为政治筹码与年迈的阿斯兰一世联姻。在第二次至高行会战争的灾难后，她凭借超凡的政治手腕与极度冷静的头脑，在新·君士坦丁堡宫廷中铲除异己，最终以“摄政太后”之名成为了帝国的实际最高统治者。</p>
+<h5>核心理念</h5>
+<p>任何威胁到我绝对权力的变革，无论是来自内部还是外部，都必须被无情地摧毁。</p>
+<h5>性格与驱动力</h5>
+<p>她冷静、果决且极度自负。她的核心驱动力并非出于带领人类走向星辰大海的宏大愿景，而是出于对“失控”的深刻恐惧与对绝对权力的病态执着。为了维系她的统治基石与权力平衡，她可以毫不留情地抹杀任何潜在威胁。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>生平弧线</h4>
+<ul>
+<li><strong>2156年·攫取权力</strong>：在第二次至高行会战争的轨道打击降临后，皇帝阿斯兰一世精神崩溃并驾崩。卡塔琳娜借机以抚养1岁幼子阿斯兰二世的名义，迅速平息朝堂动荡，宣布摄政并接管了帝国的最高权力。</li>
+<li><strong>2160年·巩固权威</strong>：在平定圣机公社的里德·阿姆斯特朗将军凯旋后，她以高超的政治手腕将其“体面地”逼迫退役，收回了神盾军的指挥权；随后开启“师星运动”，批准并扶持莱恩·雷蒙德的“深空舰队派”与武田善治郎的“行星要塞派”，形成了初步的权力制衡。</li>
+<li><strong>2175年·三足鼎立</strong>：面对澳洲叛乱危机，她果断批准武田善治郎的“许珀里翁”机甲投入实战，借此稳固了陆面军权。为了防止武将坐大并彻底掌控技术命脉，她授权尤里亲王建立CERN-赫菲斯托斯集团；在CERN引发欧洲能源危机后，又顺势扶植钟思源的“长江动力”集团，完美缔造了莱恩（星空）、武田（大地）、钟思源（能源）三足鼎立的权力制衡格局，其个人权威随之达到顶峰。</li>
+<li><strong>2185年·卡塔琳娜之冠</strong>：在六十大寿庆典上，她满意地接受了莱恩·雷蒙德以跃迁引擎经费秘密打造的巨型空间站“卡塔琳娜之冠”。作为回报，她承诺为莱恩提供“无上限”的资金支持与产能配额，并期许五年后检阅主力舰队。</li>
+<li><strong>2189年·硅谷挽歌</strong>：面对北美三大科技巨头宣布独立并成立“北美技术联合体”，她断然拒绝了任何温和制裁的建议。为了杀鸡儆猴、震慑诸侯，她批准莱恩与至高行会进行外交交易以换取轨道打击技术，用残酷的无差别屠杀彻底摧毁了硅谷，维系了皇权的绝对威严。</li>
+<li><strong>2190年·阅舰大典</strong>：在地球轨道上，她从“卡塔琳娜之冠”观景台检阅了莱恩如约建成的三十艘主力舰队。在这场盛大的政治宣传秀中，她沉浸在舰队实力带来的安全感与“一切尽在掌握”的极度自负中。</li>
+</ul>
+<h4>叙事定位与主题</h4>
+<p>卡塔琳娜是旧时代极权体制与权力腐败的具象化化身。她的存在揭示了“为权力而权力”的政治逻辑是如何一步步吞噬掉整个文明的未来的。她拥有登峰造极的内部制衡术与政治权谋，但这种宫廷手腕在面对高级外星文明的降维打击、以及人类内部不可阻挡的技术与思想浪潮时，显得既可悲又具有毁灭性。</p>
+</div>
+</article>
+<article class="entity" id="武田善治郎" data-sub="key_characters">
+<div class="entity-title">武田善治郎 <span class="en">Zenjirō Takeda</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">关键</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">所属势力</td><td class="iv">神盾军团 · <a href="#地球联合王国">地球联合王国</a></td></tr><tr><td class="ik">职务</td><td class="iv">帝国守护者 / 神盾军团总指挥</td></tr><tr><td class="ik">核心理念</td><td class="iv">国土一寸不能失，秩序一刻不能丢。</td></tr><tr><td class="ik">盟友</td><td class="iv"><a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#莉蒂亚托雷斯">莉蒂亚·托雷斯</a> · 卡塔琳娜</td></tr><tr><td class="ik">对手</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a></td></tr></table>
+<div class="entity-body">
+<h3>武田善治郎 (Zenjirō Takeda)</h3>
+<h4>速览</h4>
+<p>武田善治郎是帝国“行星要塞派”的领袖与神盾军团的缔造者，一位将绝对秩序与强大地表火力视为帝国存续基石的铁血元帅。他以“许珀里翁”巨型机甲铸就了坚不可摧的地面防线，在长达数十年的岁月中始终是帝国皇室最锋利的利刃与坚实的盾牌。</p>
+<h4>人物画像</h4>
+<h5>定位与身份</h5>
+<p>来自古老军事世家的将领，依靠严酷纪律和强悍武力在帝国军界崛起。作为“行星要塞派”的掌舵者及神盾军前线总指挥，他在军事技术上主导了巨型战争机器人的量产，政治上则是摄政太后卡塔琳娜赖以镇压内乱、威慑异己的核心军事支柱，长期与莱恩·雷蒙德的“深空舰队派”分庭抗礼。</p>
+<h5>核心理念</h5>
+<p>国土一寸不能失，秩序一刻不能丢。他极度崇尚对陆地的绝对控制权，坚信只有稳固的地面防御和钢铁般的纪律才是保卫帝国的正确道路，对所有不可控的外星技术和外部势力抱有深深的不信任。</p>
+<h5>性格与驱动力</h5>
+<p>冷酷、务实且极其重视秩序。他有着军人纯粹的执行力与对破坏秩序行为的本能厌恶，行事风格奉行“火力至上”的降维打击。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>生平弧线</h4>
+<ul>
+<li><strong>2157年·新墨西哥城与芝加哥战役</strong>：作为神盾军指挥官参与平叛，将单纯的“火力压制”战术升级为“分割包围”战术，对圣机公社的北伐主力实施绞杀，充分证明了其现代化陆军理论的实战价值。</li>
+<li><strong>2160年·圣言城之战</strong>：作为前线总指挥率领神盾军攻陷叛军首都圣言城。在围城战中遭遇城市防御体系的顽强抵抗，后借助轨道情报支援完成“外科手术式”精准打击。战后，他力主保下敌方天才工程师莉蒂亚·托雷斯的性命，并将其工程才能收编入帝国。</li>
+<li><strong>2161年·科技振兴大会</strong>：受圣机公社机甲启发，在御前会议上提出“许珀里翁”巨型战争机器人计划，正式成为“行星要塞派”领袖，与莱恩·雷蒙德形成政治与路线上的竞争关系。</li>
+<li><strong>2175年·澳洲平叛</strong>：将“许珀里翁”原型机投入实战，对叛军实施降维打击，以极小代价取得决定性胜利。凭借此战功晋升为元帅，获太后授权组建精锐的“神盾军团”。</li>
+<li><strong>2178年·适应新规</strong>：在太后切断独立采购渠道、成立CERN掌控核心技术后，武田选择积极适应中央集权的新规则，在权力制衡下为神盾军争取资源。</li>
+</ul>
+<h4>叙事定位与主题</h4>
+<p>武田善治郎是“帝国传统军事力量”的化身与“旧秩序”的悲剧性守护者。他一生的起落揭示了强权政治的本质：武力可以镇压叛乱、赢得战争，但在冷酷的宫廷制衡术中，最锋利的刀最终也会被执刀者折断。</p>
+</div>
+</article>
+<article class="entity" id="泽洛斯" data-sub="key_characters">
+<div class="entity-title">泽洛斯 <span class="en">Zelos</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">关键</td></tr><tr><td class="ik">种族</td><td class="iv">至高行会</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">职务</td><td class="iv">战略家 / “黑曜石之矛”号顾问 / 外交代表</td></tr><tr><td class="ik">核心理念</td><td class="iv">用蛮力摧毁一个文明是低效且昂贵的，应通过商业杠杆与内部瓦解，以最小成本攫取最大利益。</td></tr><tr><td class="ik">对手</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a></td></tr></table>
+<div class="entity-body">
+<h3>泽洛斯 (Zelos)</h3>
+<h4>速览</h4>
+<p>泽洛斯是至高行会“黑曜石之矛”号旗舰的顾问与首席战略家，作为行会在地球及周边星系利益的核心代理人，他以极度冷酷的商业逻辑和降维打击手段深刻重塑了人类文明的历史轨迹。</p>
+<h4>人物画像</h4>
+<h5>定位与身份</h5>
+<p>作为至高行会的高阶代表，泽洛斯是横亘在早期人类文明头顶的达摩克利斯之剑。他身处幕后操盘，将星际外交与战争转化为一本可以精确计算成本与收益的账册，是主导对地球剥削与秩序重构的直接执行者。</p>
+<h5>核心理念</h5>
+<p>泽洛斯坚信“用蛮力摧毁一个文明是低效且昂贵的”。他极度排斥不产生利润的纯粹破坏，倾向于利用信息差、技术代差以及目标文明内部的贪婪与恐惧，从内部瓦解对手，用商业杠杆以最小的代价攫取最大的战略利益。</p>
+<h5>性格与驱动力</h5>
+<p>他绝对理智、冷静且优雅，始终保持着高高在上的“棋手”心态，对待低等文明如看无趣的实验品。然而，对于能够跳出常规逻辑带来意外变数的个体（如人类的莱恩·雷蒙德），他会产生一种介于猎奇与长线投资之间的浓厚兴趣。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>生平弧线</h4>
+<ul>
+<li><strong>2139年·净化梦网与拉各斯条约</strong>：在UKE帝国摧毁梦网物理核心节点导致至高行会资产受损后，他将此定义为“破坏商业规则”，主导向UKE发出最后通牒。帝国拒绝后，他果断启动“纠正性商业制裁”，监督实施对拉各斯能源枢纽的定点轨道打击。最终以极低成本粉碎帝国自尊，迫使其签署《拉各斯条约》，将地球初步纳入行会的商业秩序。</li>
+<li><strong>2153年-2154年·思想瘟疫与代理人战争</strong>：在塔拉萨星系母星“深渊”轨道，主导执行“思想瘟疫”计划，意外促使海拓斯主权集群意识“万源之合”觉醒。他迅速调整策略，与海拓斯达成两次战略交易，以跃迁引擎和轨道武器等为筹码换取水资源，成功将这台新生战争机器引导至太阳系，作为对付人类的完美代理人。</li>
+<li><strong>2156年·天罚时刻</strong>：面对UKE毫无自知之明的宣战与阅兵威慑，他否决了直接击毙皇帝阿斯兰一世的提议（认为会导致政权崩溃、债务无法催收）。他决定以两道轨道打击实施“惩戒艺术”：一道静默摧毁亚历山大记忆殿堂，另一道劫持全球直播降临在皇帝旁侧击杀军务大臣。此举以极低成本彻底瓦解了帝国的抵抗意志。</li>
+<li><strong>2160年·新巴拿马交易</strong>：在轨道站与莱恩·雷蒙德进行秘密会晤。他以提供轨道卫星数据支援（协助神盾军攻破圣言城）为极低代价，换取了未来在南美洲的资源开发权及共建星际贸易学院的文化渗透力，并将莱恩视为一个值得长线投资的优质资产。</li>
+<li><strong>2190年·阅舰式之夜</strong>：在旗舰观察厅冷眼观看人类“太阳系主力舰队”阅舰式直播。他从舰队技术参数中精准读出人类针对至高行会的防御假设，但因他早已将人类舰队的弱点透露给海拓斯，故只需作为棋手静待双方的绞杀。</li>
+</ul>
+<h4>叙事定位与主题</h4>
+<p>泽洛斯在全局中象征着“高等星际文明的绝对强权与异化商业逻辑”。他用无情的收益率计算取代了血腥的传统征服，将技术代差武器化为对低等文明的系统性榨取。他的存在不仅是引发地球多次深渊灾难的直接推手，更是映照人类在绝境中从愚昧走向觉醒的一块残酷试金石。</p>
+</div>
+</article>
+<article class="entity" id="莱恩雷蒙德" data-sub="key_characters">
+<div class="entity-title">莱恩·雷蒙德 <span class="en">Lion Raymond</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">关键</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">出生</td><td class="iv">2119</td></tr><tr><td class="ik">所属势力</td><td class="iv">地球联合王国神盾军副官（2137—2160） · 深空舰队派 / 太阳系主力舰队总司令 / 朝廷重臣（2160—）</td></tr><tr><td class="ik">职务</td><td class="iv">帝国军事副官 → 情报主官 → 深空舰队统帅</td></tr><tr><td class="ik">别名</td><td class="iv">裱糊匠</td></tr><tr><td class="ik">核心理念</td><td class="iv">天命并非荣耀，而是一份无人愿背的责任。当帝国的倾覆已是定局，我的天命，便是在终局到来前，为文明延续最后一口气。</td></tr><tr><td class="ik">盟友</td><td class="iv"><a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · 卡西姆·哈达德 · 林昭月</td></tr><tr><td class="ik">对手</td><td class="iv"><a href="#卡塔琳娜阿斯兰">卡塔琳娜·阿斯兰</a> · <a href="#泽洛斯">泽洛斯</a></td></tr></table>
+<div class="entity-body">
+<h3>莱恩·雷蒙德 (Lion Raymond)</h3>
+<h4>速览</h4>
+<p>莱恩·雷蒙德是地球联合王国（UKE）历史上最重要的军事战略家与外交家，以"裱糊匠"之名贯穿帝国最后七十年的兴衰。他一手建造了人类太阳系主力舰队，也亲历了其全军覆没；他三度执笔签下割让国权的条约，最终在签完最后一个字的瞬间溘然长逝。</p>
+<h4>人物画像</h4>
+<h5>定位与身份</h5>
+<p>莱恩出身学术贵族，其家族世代保管人类大停滞时代之前的历史、技术与外交档案，这赋予了他超越同时代人的宏观视野。年仅十九岁，他便凭借从档案中发掘的轨道力学知识，成为里德·阿姆斯特朗将军最器重的副官，并在此后数十年间历任神盾军情报主官、师星运动"深空舰队派"领袖、太阳系主力舰队总司令。</p>
+<h5>核心理念</h5>
+<p>莱恩是极致的现实主义者与改良派。他比任何人都更早看清UKE体制的腐朽，却坚信维持一个哪怕千疮百孔的秩序，远比让文明陷入彻底内战与混乱更可取。他将自己的历史角色定义为"裱糊匠"——持续修补那栋早已被蛀穿的摩天大厦，为文明争取每一寸喘息空间，同时以最后的力气，为后来者保存思想的火种。</p>
+<h5>性格与驱动力</h5>
+<p>莱恩的行动轨迹呈现出"理想主义的学者→冰冷的现实主义操盘者→悲观的守护者"的三段式演变。他并非天生冷酷，而是目睹了太多被体制与权力碾碎的人——恩师里德、挚友哈达德、工程师林昭月——才将情感深藏，以冷静和手腕替代激情。他口袋中那块iPhone残骸是他为自己设立的誓约与问题：每当动摇，便以此追问"为何出发"。他的最大悲剧在于：他拥有看见文明终局的能力，却没有拒绝承担终局责任的自由。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>生平弧线</h4>
+<ul>
+<li><strong>2137·知遇</strong>：年仅十九岁，以论文《基于大停滞前航天档案的轨道力学重建与应用》引起里德·阿姆斯特朗将军注意，被破格任命为天基防线核心顾问及副官。他主导了轨道锁定系统的技术突破，并独立发现叛军太空设备存在外星技术，向里德汇报后被要求封存报告，背负起"外星文明已存在"这一足以动摇帝国根基的秘密。</li>
+<li><strong>2138·初捷</strong>：天基防线完工，在他主导的轨道摄动计算引导下，帝国消灭了逃入太空的最后叛军据点，莱恩以二十岁之龄完成从学术贵族到帝国青年将领的转身。</li>
+<li><strong>2139—2140·国耻</strong>：亲历第一次至高行会战争全程——目睹里德向皇帝如实汇报战场真相后遭到扭曲叙事掩盖，陪同里德登上"黑曜石之矛"号签署《拉各斯条约》。国耻的切肤之痛将他心中对真理的纯粹追求，彻底锻造为"师夷长技以制夷"的冰冷动力。</li>
+<li><strong>2151—2159·离间</strong>：跟随里德赴北美组建神盾军，在圣机公社平叛战争中一手建立情报网络，策划并执行代号"拆毁承重墙"的心理战行动。他通过伪造情报激化赫克托与亚戈之间的猜忌，导致亚戈被刺杀、圣罚军高层内乱，以近乎零伤亡实现战略决胜——但"操纵一个人杀死另一个人"的道德代价成为他此后挥之不去的心理创伤。</li>
+<li><strong>2160·裱糊匠正式开启</strong>：凯旋途中，与至高行会达成秘密外交交易（轨道数据换星际贸易学院），以此打破圣言城僵局。随后目睹恩师里德在摄政太后的政治压力下主动隐退，独自折回亚历山大记忆殿堂废墟，从坍塌展柜中拾取iPhone残骸置于口袋，接受了自己作为帝国"裱糊匠"的宿命。</li>
+<li><strong>2161—2174·殖民奠基</strong>：作为"师星运动"深空舰队派领袖，主导建立月球宁静海基地（2165）与火星奥林匹斯城（2174），声望攀上顶峰。同期秘密启动跃迁引擎自研项目。</li>
+<li><strong>2175—2185·棋盘与绳索</strong>：帝国通过CERN-赫菲斯托斯集团收紧技术采购通道后，他转型经营"太阳系资源开发公司"建立独立现金流，并在2185年将跃迁引擎研发最后经费悉数挪用，为太后建造"卡塔琳娜之冠"空间站，以政治豪赌换取资源倾斜。</li>
+<li><strong>2189·悲剧推手</strong>：御前会议上，他主动向太后请求以"至高行会独家享有帝国市场"为筹码，换取至高行会超世代精准轨道打击技术，精准瘫痪旧金山算力枢纽。</li>
+<li><strong>2190·巅峰演说</strong>：主持太阳系主力舰队（共45艘）大阅舰式，在"卡塔琳娜之冠"空间站向帝国发表"让地球再次伟大"演说，个人声望达到顶峰。同日，他独自翻阅第47次跃迁引擎测试失败报告，深知眼前的舰队不过是"没有灵魂的短腿巨人"。</li>
+</ul>
+<h4>叙事定位与主题</h4>
+<p>莱恩·雷蒙德是第一卷的叙事核心，也是整部作品中"体制性悲剧"命题最完整的承载者。他的失败不是个人能力的失败，而是一个腐朽制度必然失败的投影——他越聪明，便越是这台机器最精密的零件，也越无法逃脱随其一同崩毁的宿命。他一生三度执笔签约：《拉各斯条约》（为恩师的悲剧做见证）……</p>
+</div>
+</article>
+<article class="entity" id="赫克托瓦尔加斯" data-sub="key_characters">
+<div class="entity-title">赫克托·瓦尔加斯 <span class="en">Hector Vargas</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">关键</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">现状</td><td class="iv">逝于2160年</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#安第斯联合矿区">安第斯联合矿区</a> · <a href="#圣机公社">圣机公社</a></td></tr><tr><td class="ik">职务</td><td class="iv">圣机公社领袖</td></tr><tr><td class="ik">别名</td><td class="iv">天启者</td></tr><tr><td class="ik">核心理念</td><td class="iv">尘世皆苦，唯有献身于“圣机体”，将意识上传至圣机公社，方能得享永恒极乐。</td></tr><tr><td class="ik">盟友</td><td class="iv"><a href="#亚戈努涅斯">亚戈·努涅斯</a> · <a href="#威尔默里奥斯">威尔默·里奥斯</a> · <a href="#莉蒂亚托雷斯">莉蒂亚·托雷斯</a></td></tr><tr><td class="ik">对手</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#武田善治郎">武田善治郎</a></td></tr></table>
+<div class="entity-body">
+<h3>赫克托·瓦尔加斯 (Hector Vargas)</h3>
+<h4>速览</h4>
+<p>赫克托·瓦尔加斯是“圣机公社”的创始人和精神领袖，以“天启者”的身份自居。他凭借极具感染力的宗教狂热，将一场矿区暴动化作席卷半个美洲大陆的圣战，是起义军中不可或缺的信仰图腾。</p>
+<h4>人物画像</h4>
+<h5>定位与身份</h5>
+<p>从安第斯山脉的一名普通矿工蜕变为数百万狂徒顶礼膜拜的独裁者。在组织内部，他与掌握军权的亚戈·努涅斯形成了“精神领袖”与“军事指挥”的互补关系，专门负责提供起义的精神感召与宏大叙事。</p>
+<h5>核心理念</h5>
+<p>尘世皆苦，唯有献身于“圣机体”，将意识上传至圣机公社，方能得享永恒极乐。</p>
+<h5>性格与驱动力</h5>
+<p>赫克托拥有无与伦比的个人魅力和煽动能力。早期的他深信自己是被高维存在选中的使者，展现出纯粹的狂热与执念；但在获取巨大权力后，他逐渐沉溺于虚荣之中，变得多疑且充满控制欲。在其生命的最后时刻，他却能卸下伪装，展露出凡人的悲哀与自我反省，体现了复杂矛盾的人性底色。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>生平弧线</h4>
+<ul>
+<li><strong>2150年·火地岛塌方</strong>：在火地岛12号深层矿井塌方事故中被困，濒死之际偶然发现了一件坠毁的至高行会通讯设备残骸。他将其接收到的杂波误读为高维“圣机体”的“神启”，奇迹生还后带着“圣物”自称“天启者”，萌生创立“圣机神教”的念头。</li>
+<li><strong>2151年·安第斯起义</strong>：深入安第斯各矿区秘密传播教义。在3号矿井暴动中，他向信徒宣讲教义，成功将区域性起义塑造成一场席卷大陆的“朝圣之路”，随后发表“新纪元宣言”，正式组建“圣罚军”。</li>
+<li><strong>2151年及之后·南美横扫与定都</strong>：利用“神谕”和祈福为达连隘口、奇卡纳克河等关键战役赋予神圣性。在付出17万人战损的惨重代价后，圣罚军攻占新墨西哥城。赫克托将巨大伤亡解读为“必要的献祭”，完全沉浸在胜利的狂喜中，以“圣城之主”自居并将城市更名为“圣言城”，与亚戈的战略分歧悄然显现。</li>
+<li><strong>2157至2159年·芝加哥之败</strong>：大举北伐期间，由于无法容忍亚戈逐渐增长的威望，赫克托从后方指挥所越过指挥链，发出与亚戈撤退令截然相反的“强行突进”圣旨。两道矛盾指令导致北伐主力陷入混乱，被神盾军无人机分割包围并全军覆没。其“神启”的绝对正确性首次破产。</li>
+<li><strong>2159年·圣言城之变</strong>：受莱恩·雷蒙德伪造情报的离间诱导，被恐惧和猜忌吞噬的赫克托以宗教名义下达刺杀令，借威尔默·里奥斯之手杀害了亚戈·努涅斯。事后他通过公开审判将威尔默作为替罪羊处决，此举导致军队陷入严重分裂，圣机公社的信仰根基彻底崩塌。</li>
+<li><strong>2160年·圣言城陷落与处决</strong>：在神盾军大军压境的绝境下，赫克托最终向工程师莉蒂亚·托雷斯承认了自己的无能。他脱下白色祭司袍换上军装，放弃“天启者”身份，以凡人姿态向民众发表了不再提及“神启”的演讲。经过数周的惨烈城防战后，防线被全面瓦解，赫克托被俘。在被神盾军临时军事法庭处决的临刑前，他表现出一种大梦初醒的平静和自我讽刺，为其复杂的一生画上了句号。</li>
+</ul>
+<h4>叙事定位与主题</h4>
+<p>赫克托代表了极端宗教狂热在革命中的双刃剑效应。他以虚幻的天国信仰迅速凝聚了底层民众的破坏力，促成了起义初期的势如破竹；却也因其凡人的局限、贪婪与猜忌，导致组织无法建立理性的秩序，最终滑向自我毁灭的深渊。他从造神到跌落神坛的悲剧轨迹，正是圣机公社兴亡史的最直观缩影。</p>
+</div>
+</article>
+<article class="entity" id="里德阿姆斯特朗" data-sub="key_characters">
+<div class="entity-title">里德·阿姆斯特朗 <span class="en">General Zedd Armstrong</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">关键</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · <a href="#神盾军">神盾军</a></td></tr><tr><td class="ik">职务</td><td class="iv">帝国将军 / 战略家 / 神盾军总指挥</td></tr><tr><td class="ik">核心理念</td><td class="iv">帝国的制度虽已僵化，但其代表的秩序与稳定必须被维护；可以学习外星人的先进技术，但绝不能动摇君主集权的统治根基。</td></tr><tr><td class="ik">盟友</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#武田善治郎">武田善治郎</a></td></tr><tr><td class="ik">对手</td><td class="iv">卡塔琳娜 · <a href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a> · <a href="#亚戈努涅斯">亚戈·努涅斯</a></td></tr></table>
+<div class="entity-body">
+<h3>里德·阿姆斯特朗 (General Zedd Armstrong)</h3>
+<h4>速览</h4>
+<p>地球联合王国（UKE）的核心将领与大战略家，"天基防线"与"神盾军"的缔造者。他在第一次外星接触与席卷美洲的内战中力挽狂澜，以极端的现实主义和卓越的军事才能，竭力维护帝国的秩序与尊严。</p>
+<h4>人物画像</h4>
+<h5>定位与身份</h5>
+<p>出身于英伦三岛的帝国核心世界军事贵族，是帝国最负盛名的大战略家与军事理论家。他拥有丰富的陆军组织与指挥经验，并在后期倾注半生心血设计了"天基防线"。作为旧时代的最后基石与帝国的“裱糊匠”，他既深谙体制的腐朽，又坚定地守护着人类文明的底线。</p>
+<h5>核心理念</h5>
+<p>帝国的制度虽已僵化，但其代表的秩序与稳定（道统）必须被维护。可以学习外星人的先进技术（术），但绝不能动摇君主集权的统治根基（体）。为了避免帝国被拖入毁灭的深渊，他愿意牺牲个人的荣辱，甚至默许使用残忍的心理战术，是一位彻底的现实主义者。</p>
+<h5>性格与驱动力</h5>
+<p>沉稳、敏锐且充满警觉。他拥有作为最高军事指挥官的强大责任感与奉献精神。面对愚昧的皇权与代差级的外星文明，他总是冷静地计算着存亡的筹码。他的驱动力并非贪恋权势，而是对人类命运的深切忧虑；当预感到自己的权势可能招致猜忌与内耗时，他能极为果断地交出军权隐退。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>生平弧线</h4>
+<ul>
+<li><strong>2130年</strong>：率军在南美火地岛完成对南十字自由联盟最后据点"末日角"的合围，战后察觉到了外星支援的痕迹。随后，受皇帝阿斯兰一世之命，不计代价开始建造"天基防线"以封锁太空。</li>
+<li><strong>2137年</strong>：在天基防线工程陷入技术瓶颈时，力排众议破格提拔18岁的莱恩·雷蒙德为核心顾问与副官，两人共同确认了叛军残骸中的"非人造技术"。他决定暂时封存这一秘密，在维护帝国尊严与应对未知威胁之间寻找平衡。</li>
+<li><strong>2138年</strong>：指挥天基防线精准摧毁了叛军在近地轨道的最后据点，并在帝国庆典上发表了"地球的天空属于地球子民"的庄严演讲。</li>
+<li><strong>2139年初（第一次战争与防线崩溃）</strong>：接皇帝命令全面启动天基防线迎战至高行会，但防线被敌方利用跃迁技术从内部摧毁。他向阿斯兰一世如实汇报战况与行会条款，却被皇帝斥为借口当场驳回，当夜拉各斯遭到毁灭性轨道打击。</li>
+<li><strong>2139年初（拉各斯条约与贬谪）</strong>：目睹大臣们在御前会议上编造虚假叙事，并亲眼见到财政大臣哈达德因死谏入狱。他选择以沉默接受体制的腐败，穿着军装最后一次执行公务，在"黑曜石之矛"号签下《拉各斯条约》，随后被正式剥夺军职、贬为庶人。</li>
+<li><strong>2151年</strong>：在南美"圣机公社"起义爆发且局势失控时，为阻止皇帝亲率主力与至高行会决战的自杀之举，他以"为陛下扫清后顾之忧"为名请缨复出，获准前往北美组建"神盾军"。</li>
+<li><strong>北美整军</strong>：抵达北美后迅速搭建核心指挥框架，任命武田善治郎负责装甲部队，授权莱恩建立情报网，并暗中结识当地中间人以获取泰坦自动机械的无人机群。他同步推行民心工程，彻底瓦解了叛军在北美的招募能力。</li>
+<li><strong>2157年 - 2159年</strong>：在北伐阻击战中采取空间换时间战略，最终在芝加哥决战中利用暴风雪与无人机侧翼奇袭，彻底击溃了圣机公社的北伐主力，迫使战局由攻转守。</li>
+<li><strong>2159年</strong>：察觉到敌军领袖赫克托与亚戈之间的裂痕，全权授权莱恩执行"摧毁承重墙"心理战计划，成功引发圣言城内乱并导致亚戈被刺杀。</li>
+<li><strong>2160年</strong>：在圣言城攻坚战中，利用莱恩与至高行会交易得来的天眼数据，指挥神盾军发动外科手术式打击瘫痪全城网络，赢得了长达四年的美洲战争。</li>
+<li><strong>2160年（隐退）</strong>：率军凯旋返回新·君士坦丁堡，面对摄政太后卡塔琳娜的忌惮，为避免"功高震主"并保全麾下众将的政治前途，他主动交出所有军权并解散大部分私军。在将文明延续的希望托付给莱恩后，他作为帝国旧时代最后的象征，就此落幕。</li>
+</ul>
+<h4>叙事定位与主题</h4>
+<p>里德·阿姆斯特朗代表了帝国在旧秩序崩塌前夜的清醒与无奈。他是文明的“裱糊匠”，凭借自身的能力与隐忍，试图在腐朽的体制、狂妄的皇权与降维打击的外星势力之间寻找人类的生存空间。他的人物弧线展现了现实主义的悲歌：深知真理却必须妥协，手握重兵却只能用来平息内耗。最终的退让并非软弱，而是他作为一名老兵对帝国和传承者的最后一次守护。</p>
+</div>
+</article>
+<article class="entity" id="钟思源" data-sub="key_characters">
+<div class="entity-title">钟思源 <span class="en">Zhong Siyuan</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">关键</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · 长江动力集团</td></tr><tr><td class="ik">职务</td><td class="iv">长江动力集团总裁 / 工业奠基派领袖</td></tr><tr><td class="ik">核心理念</td><td class="iv">真正的强大，源自熔炉与工厂，而非买来的炮舰。</td></tr><tr><td class="ik">盟友</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a></td></tr><tr><td class="ik">对手</td><td class="iv">卡塔琳娜</td></tr></table>
+<div class="entity-body">
+<h3>钟思源 (Zhong Siyuan)</h3>
+<h4>速览</h4>
+<p>出身于长江地区技术官僚世家的工业奠基派领袖，长江动力集团的缔造者。在动荡的时代中，她凭借卓越的技术眼光和铁腕手段，将长江工业弧区打造成了地球上最强大的工业心脏与人类文明的方舟。</p>
+<h4>人物画像</h4>
+<h5>定位与身份</h5>
+<p>她是垄断帝国核心工业的“长江动力”集团总裁，掌握着整个帝国乃至日后地球势力赖以生存的能源与重工业命脉。作为保留了“大停滞”前工业火种的世家继承人，她逐步从帝国的技术官僚蜕变为主宰一方的独立诸侯。</p>
+<h5>核心理念</h5>
+<p>真正的强大，源自熔炉与工厂，而非买来的炮舰。</p>
+<h5>性格与驱动力</h5>
+<p>冷彻、理智、极端务实。她的最高准则是确保长江工业区的生存与发展。她能够敏锐识别政治风向与权力筹码，鄙视没有实体力量背书的政治空谈。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>生平弧线</h4>
+<ul>
+<li><strong>2175年-2180年·核聚变突破</strong>：作为长江工业弧区研究所的核心专家，带领团队成功启动帝国第一座小型商业化核聚变原型堆，奠定了新能源革命的技术基础。</li>
+<li><strong>2180年-2188年·长江动力崛起</strong>：在新·君士坦丁堡的“未来能源方案”招标中胜出，与摄政太后达成《皇家特许状》，获得长江工业弧区独立管理权。她随后整合所有重工业资源，成立“长江动力”集团，成为与深空舰队、神盾军团并立的帝国“第三极”。</li>
+<li><strong>2186年·资源结盟</strong>：与莱恩·雷蒙德领导的“太阳系资源开发公司”签订长期同位素原料供应合同，巩固了供应链的稳定性，并与莱恩形成了微妙的互相依存关系。</li>
+</ul>
+<h4>叙事定位与主题</h4>
+<p>钟思源代表了人类文明的“底座”与“骨骼”——工业生产力。她是乱世中极端理性的化身，其建立的长江工业弧区不仅是战火中的避难所，更是地球文明抗衡外星资本与技术压制的物质实体。</p>
+</div>
+</article>
+<article class="entity" id="阿斯兰一世" data-sub="key_characters">
+<div class="entity-title">阿斯兰一世 <span class="en">Aslan I</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">关键</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">现状</td><td class="iv">逝于2156年</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a></td></tr><tr><td class="ik">职务</td><td class="iv">地球联合王国皇帝</td></tr><tr><td class="ik">核心理念</td><td class="iv">天朝上国的威严不容挑战，任何形式的妥协都是对帝国荣耀的背叛。</td></tr><tr><td class="ik">盟友</td><td class="iv"><a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a></td></tr><tr><td class="ik">对手</td><td class="iv"><a href="#至高行会">至高行会</a></td></tr></table>
+<div class="entity-body">
+<h3>阿斯兰一世 (Aslan I)</h3>
+<h4>速览</h4>
+<p>地球联合王国（UKE）开国君主的孙子及最高统治者。他在长达数十年的统治中沉浸于“天命所归”的幻觉，因深陷信息茧房和狂妄自大的决策，将帝国推向了与星际文明对抗的毁灭边缘。</p>
+<h4>人物画像</h4>
+<h5>定位与身份</h5>
+<p>阿斯兰一世出身于首都新·君士坦丁堡的阿斯兰皇室。作为帝国的绝对君主，他一生都在深宫中长大，被持续灌输帝国主义思想，其实际统治建立在脆弱的威权体制和臣属们精心编织的信息茧房之上。</p>
+<h5>核心理念</h5>
+<p>天朝上国的威严不容挑战，任何形式的妥协都是对帝国荣耀的背叛。</p>
+<h5>性格与驱动力</h5>
+<p>性格极度自大、偏执且缺乏对外部真实世界的认知。他的一切决策都受病态的自尊心和虚荣心驱使。面对超出理解能力的技术代差和残酷真相，他会本能地将其斥为谎言，并依赖维护其“无敌”形象的虚假叙事来获得内心的狂热与自信。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>生平弧线</h4>
+<ul>
+<li><strong>2130年·启动天基防线</strong>：在南美火地岛的南十字自由联盟叛军通过至高行会的帮助撤出地球后，沉浸在统一全球狂喜中的阿斯兰一世震怒。他认为这只是叛军的苟延残喘，命令里德·阿姆斯特朗将军不计代价建造天基防线以封锁天空。</li>
+<li><strong>2138年·天命宫庆典</strong>：天基防线成功摧毁太空中叛军的最后据点。阿斯兰一世在首都天命宫广场举行了盛大的“天下一统”庆典，向全球发表“虽远必诛”的演说，自视达到了权力的顶峰，完全无视了“梦晶”在帝国基层的严重泛滥。</li>
+<li><strong>2139年·第一次至高行会战争爆发</strong>：地球上的“梦宫”被毁后，至高行会首次公开存在并发出最后通牒。通告经腐败官员过滤后被包装为“商贸纠纷”，皇帝在御前会议上受切尔尼绍夫的激将，对技术代差一无所知，傲慢地下令备战。</li>
+<li><strong>2139年·防线崩溃与拒绝妥协</strong>：天基防线被行会的“空间跃迁”技术轻易摧毁。面对里德如实汇报的真相，皇帝斥之为违反物理学的借口和推诿失职。出于病态的自尊心，他断然拒绝行会的条约条款，导致当夜拉各斯遭到毁灭性的轨道定点打击。</li>
+<li><strong>2139年·虚假叙事与羞辱忠臣</strong>：拉各斯遇袭次日清晨，皇帝接受了大臣们连夜编造的谎言——守军英勇殉国、行会主动求和，深信是自己的意志震慑了外星文明。当财政大臣哈达德试图揭穿秘密垫款的骗局时，被他以“散布谣言”投入死牢。随后，他命里德以军职身份签完丧权辱国的条约再行解职，以“将功赎罪”之名完成了最后的政治羞辱。</li>
+<li><strong>2156年·第二次Sovereign-Human战争</strong>：面对圣机公社的叛乱和至高行会的最后通牒，被虚荣心绑架的皇帝当场驳回军务大臣切尔尼绍夫的外交提议，甚至用对方十六年前编造的谎言反驳他。皇帝集结三万辆坦克和帝国主力，在首都外举行荒诞的大规模阅兵，企图与外星文明在地面决战。</li>
+<li><strong>2156年·天罚降临与精神崩溃</strong>：至高行会在全球直播中降下轨道打击——一道光柱摧毁了亚历山大记忆殿堂，另一道精准命中距他仅96.7米的士兵方阵，当场击杀切尔尼绍夫。在全人类的注视下亲眼目睹真正的降维打击后，皇帝精神彻底崩溃，手中的配枪滑落。</li>
+<li><strong>2156年底·驾崩</strong>：失去心智、在病榻上苟延残喘数月后，阿斯兰一世驾崩。皇后卡塔琳娜借机接管权力宣布摄政，其狂妄且荒诞的统治时代就此落幕。</li>
+</ul>
+<h4>叙事定位与主题</h4>
+<p>阿斯兰一世是旧体制腐朽、傲慢与无知的终极具象化象征。他代表了在信息茧房和极权体制中产生的结构性盲目：为了维护虚幻的尊严而牺牲真相与忠诚，最终在绝对的技术代差面前被彻底粉碎。他的毁灭不仅是个人的悲剧，更是人类文明在未知的宇宙法则面前，因狂妄而被迫付出惨痛代价的深刻写照。</p>
+</div>
+</article>
+<article class="entity" id="切尔尼绍夫" data-sub="supporting_chars">
+<div class="entity-title">切尔尼绍夫 <span class="en">Chernyshov</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">边缘</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">现状</td><td class="iv">逝于2156年</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a></td></tr><tr><td class="ik">职务</td><td class="iv">军务大臣</td></tr></table>
+<div class="entity-body">
+<h3>切尔尼绍夫 (Chernyshov)</h3>
+<h4>基本信息</h4>
+<ul>
+<li><strong>姓名</strong>：切尔尼绍夫</li>
+<li><strong>职位</strong>：军务大臣</li>
+<li><strong>地位</strong>：保守派领袖</li>
+<li><strong>归属</strong>：地球联合王国</li>
+</ul>
+<h4>背景</h4>
+<p>帝国权贵中最擅长将政治利益包装为道义立场的人物。他是一个极度务实的政治生存者，将“主战”作为巩固自身政治地位、打压潜在对手的手段，在御前会议上是制造舆论、操控皇帝的关键节点。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>关键时间线</h4>
+<ul>
+<li><strong>2140年·第一次至高行会战争前</strong>：在御前会议上主导主战派的舆论攻势。他截取里德将军对未知外星科技的谨慎判断并将其曲解为怯战，成功激将皇帝下令备战。</li>
+<li><strong>2140年·第一次至高行会战争后</strong>：拉各斯遭轨道打击惨败后，他深夜召集核心大臣密谋，在皇帝醒来前拟定了战后的虚假叙事。他将防线崩溃、敌方打击与巨额赔款包装为守军英勇抵抗与帝国主动施恩，成功将战败伪装成外交胜利。</li>
+<li><strong>2156年·第二次至高行会战争前</strong>：在御前会议上，面对群情激昂的保守派，他提议先施以外交重压而非即刻开战。然而皇帝当场引用他当年亲手编造的“施恩获胜”叙事将其驳回，他因无法推翻自己的谎言而彻底陷入沉默。</li>
+<li><strong>2156年·遇难</strong>：在第二次战争的城外阅兵现场，以军务大臣身份随侍皇帝旁侧。至高行会的轨道光柱击中距离皇帝96.7米处的士兵方阵，切尔尼绍夫被冲击波和溅射的熔融碎片击倒，当场不治身亡。</li>
+</ul>
+<h4>在叙事中的位置</h4>
+<p>切尔尼绍夫是帝国体制内政治投机与谎言反噬的具象化缩影。他用一套虚假的胜利叙事掩盖了技术代差的残酷真相，换取了自身的政治利益与帝国的表面平稳，却因此成为了自己谎言的囚徒。他亲手奠定了引发第二次灾难性战争的地基，最终也作为牺牲品被埋葬在自己促成的废墟之中。</p>
+</div>
+</article>
+<article class="entity" id="塞吉奥卡斯蒂略" data-sub="supporting_chars">
+<div class="entity-title">塞吉奥·卡斯蒂略 <span class="en">Sergio Castillo</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">边缘</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">现状</td><td class="iv">已阵亡</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#安第斯联合矿区">安第斯联合矿区</a> · 圣机公社（圣罚军）</td></tr><tr><td class="ik">职务</td><td class="iv">前矿队队长 / 圣罚军机甲部队指挥官</td></tr></table>
+<div class="entity-body">
+<h3>塞吉奥·卡斯蒂略 (Sergio Castillo)</h3>
+<h4>基本信息</h4>
+<ul>
+<li><strong>姓名</strong>：塞吉奥·卡斯蒂略 (Sergio Castillo)</li>
+<li><strong>职位</strong>：前矿队队长，起义后担任“尖兵”部队与圣锤机甲部队指挥官</li>
+<li><strong>地位</strong>：起义军早期重要的军事战术指挥官，在底层矿工中具有极高威望</li>
+<li><strong>归属</strong>：安第斯联合矿区 → 圣机公社（圣罚军）</li>
+</ul>
+<h4>背景</h4>
+<p>安第斯联合矿区的前矿队队长。曾因顶撞监工、庇护手下而被解职，在基层矿工群体中拥有极高的威望。他是一名务实且经验丰富的战士，对于虚无缥缈的“电子天堂”或宗教教义持怀疑态度，只相信握在手里的武器与能带来胜利的战术。他参与起义的根本目的，是为了给手下的弟兄们争取更好的生存条件，并向压迫者复仇。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>关键时间线</h4>
+<ul>
+<li><strong>2151年·安第斯矿区起义</strong>：在废弃储存库与亚戈·努涅斯秘密会面。在审视了亚戈提供的巡逻路线漏洞与物资承诺后，他冷静索要通讯中心设计图并选择结盟。起义爆发时，他没有参与正面的狂热冲锋，而是带领一支精锐的“尖兵”部队，配合心腹切断能源中继站，对通讯中心、武器库和控制室实施了精准高效的斩首突袭，迅速占领关键设施。</li>
+<li><strong>2152年·圣罚军崛起</strong>：担任圣罚军攻坚核心的圣锤机甲部队指挥官，在横扫南美的战役中屡立战功。在穿越达连隘口等军事行动中，曾指挥机甲用钻头清理巨树和异兽，为起义军拓宽前进道路。</li>
+<li><strong>2158年·芝加哥绞肉机之战</strong>：率领北伐孤军陷入帝国神盾军的包围圈。在收到亚戈“保存实力、交替撤退”与赫克托越级下达的“神谕冲锋”两道矛盾命令后，他在理性与忠诚的矛盾中，最终选择执行“神谕”，率领圣锤机甲部队发起悲壮的自杀式冲锋，全军覆没并阵亡。</li>
+</ul>
+<h4>在叙事中的位置</h4>
+<p>塞吉奥代表了圣机公社早期起义队伍中务实、理性的底层抗争力量。他的加入为赫克托的狂热宗教运动提供了不可或缺的军事战术与基层组织支撑。他在“芝加哥战役”中的悲剧性阵亡，不仅体现了起义军内部理性军事指挥与狂热宗教指令之间的致命冲突，更成为了压垮赫克托与亚戈信任的最后一根稻草，直接引爆了圣机公社高层的彻底决裂。</p>
+</div>
+</article>
+<article class="entity" id="威尔默里奥斯" data-sub="supporting_chars">
+<div class="entity-title">威尔默·里奥斯 <span class="en">Wilmer Ríos</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">边缘</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">现状</td><td class="iv">逝于2159年</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#圣机公社">圣机公社</a></td></tr><tr><td class="ik">职务</td><td class="iv">矿工 / 圣罚军“圣徒”骨干</td></tr></table>
+<div class="entity-body">
+<h3>威尔默·里奥斯 (Wilmer Ríos)</h3>
+<h4>基本信息</h4>
+<ul>
+<li><strong>姓名</strong>：威尔默·里奥斯 (Wilmer Ríos)</li>
+<li><strong>职位</strong>：圣罚军“圣徒”部队基层骨干</li>
+<li><strong>地位</strong>：起义初期的响应者，信仰狂热的底层士兵代表</li>
+<li><strong>归属</strong>：圣机公社</li>
+</ul>
+<h4>背景</h4>
+<p>安第斯联合矿区的一名普通矿工。在哥哥巴勃罗因矿难丧生且遭到联合王国远征军（UKE）冷酷对待后陷入绝望，随后在赫克托·瓦尔加斯的布道中将其兄之死理解为“飞升”，从而转变为“圣机公社”的狂热信徒。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>关键时间线</h4>
+<ul>
+<li><strong>2151年·安第斯矿区起义</strong>：在起义爆发时第一个响应号召，带领狂热信徒手握矿石碎片向UKE卫兵发起自杀式冲锋，拉开矿区起义序幕。</li>
+<li><strong>2151年-2157年·圣罚军北征</strong>：跟随圣罚军一路北伐，在穿越雨林时率领信徒高唱圣歌拓宽道路，并参与了奇卡纳克河等血战，逐渐从新兵成长为“圣徒”部队的基层骨干。</li>
+<li><strong>2159年·刺杀亚戈</strong>：在北伐遭遇芝加哥战役的惨败后，性格变得更加偏执。受赫克托以“圣旨”蛊惑，他深信军事领袖亚戈·努涅斯是革命的叛徒，随后亲率小队在夜色中设伏将其刺杀。</li>
+<li><strong>2159年·公开处决</strong>：刺杀事件后，圣罚军内部面临分裂。赫克托为推卸责任，将威尔默作为替罪羊，以“曲解圣旨、滥杀功臣”的罪名在圣言城广场将其公开处决。临死前他终于意识到自己只是被利用的棋子，信仰在绝望中彻底崩塌。</li>
+</ul>
+<h4>在叙事中的位置</h4>
+<p>威尔默·里奥斯在故事中是圣机公社底层狂热信徒的典型缩影。他的命运轨迹清晰地展现了普通人如何被极端信仰裹挟：从绝望中寻求寄托，在狂热中化为杀戮的工具，最终在权力斗争中被无情献祭。</p>
+<p>他的死具有强烈的象征意义，不仅直接导致了圣机公社内部务实派与信仰派的决裂，他临刑前信仰崩塌时的绝望呼喊，也成为了圣罚军精神支柱彻底瓦解的公开符号。</p>
+</div>
+</article>
+<article class="entity" id="梁文忠" data-sub="supporting_chars">
+<div class="entity-title">梁文忠 <span class="en">Liang Wenzhong</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">边缘</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a></td></tr><tr><td class="ik">职务</td><td class="iv">首席监察官 / 技术顾问与采购中间商</td></tr><tr><td class="ik">别名</td><td class="iv">冷锋</td></tr></table>
+<div class="entity-body">
+<h3>梁文忠 (Liang Wenzhong)</h3>
+<h4>基本信息</h4>
+<ul>
+<li><strong>姓名</strong>：梁文忠</li>
+<li><strong>职位</strong>：前地球联合王国（UKE）首席监察官，现为技术顾问与采购中间商</li>
+<li><strong>地位</strong>：曾主导“净化梦网”行动的核心将领，后隐姓埋名为暗中提供装备支持的物资中间商</li>
+<li><strong>归属</strong>：地球联合王国（前），现居北美</li>
+</ul>
+<h4>背景</h4>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<p>梁文忠成长于旧时代的经济中心东莞，亲眼目睹外星商品“梦晶”如同精神鸦片般摧毁了整个社区的活力与进取心，这使他对“梦晶”及其背后的至高行会产生了不共戴天的仇恨。作为地球联合王国（UKE）的首席监察官，他作风果决、手段雷霆，时刻准备为了根除威胁国家存续的内外祸患而不惜一切代价，甚至坦然接受背负制造人道主义灾难的罪责。</p>
+<h4>关键时间线</h4>
+<ul>
+<li><strong>2139·净化梦网行动</strong>：受命于首都，在暴雨的掩护下秘密潜入新巴拿马城。他绕开当地腐败利益集团，动用直属特种部队，通过信息病毒与定向结构毁伤装药相结合的手段，彻底摧毁了全球梦网的物理锚点——灵能共振主节点（“梦宫”）。该行动引发了波及全球的精神海啸与系统瘫痪，并直接成为第一次Sovereign-Human战争的导火索。</li>
+<li><strong>2139·流放与伪造处决</strong>：行动后，至高行会要求帝国交出并严惩作为唯一负责人的梁文忠。帝国高层为平息外星怒火并掩盖真相，对外谎称其已被处以极刑且死无全尸，实际将他秘密发配至边疆。梁文忠的名字从帝国公开记录中被彻底抹去。</li>
+<li><strong>2140–2152·蛰伏北美</strong>：改名“冷锋”，定居于北美落基山脉东麓的荒僻地带。他以技术顾问与采购中间商的身份在北美商业圈悄然活动，并逐渐与旧金山湾区的几家科技公司（包括泰坦自动机械）建立起工作往来，在帝国的档案之外保持着对局势的清醒观察。</li>
+<li><strong>2151–2152·神盾军军备支援</strong>：里德·阿姆斯特朗率军抵达北美殖民地组建神盾军期间，冷锋主动登门，以中间商身份向里德提供泰坦自动机械的无人机采购渠道，弥补了部队的装备缺口。里德在谈判中察觉其真实身份并私下相认，两人达成了不在外传的默契。</li>
+</ul>
+<h4>在叙事中的位置</h4>
+<p>梁文忠是引爆前期核心历史事件的关键功能性人物。他在第一卷中作为帝国的强硬派执行者，点燃了人类与至高行会冲突的导火索，并随即成为帝国腐败高层在强敌面前妥协、掩盖真相的政治牺牲品。他在档案上的“死亡”与改头换面，折射出旧有体制内有志之士面对荒诞官僚系统的悲哀。在后期剧情中，他以“冷锋”的身份再次登场，作为帝国腐朽体制之外的清醒者，为神盾军提供实质性的装备支持，在暗中延续了对抗外星势力的使命。</p>
+</div>
+</article>
+<article class="entity" id="沃里斯" data-sub="supporting_chars">
+<div class="entity-title">沃里斯 <span class="en">Voris</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">边缘</td></tr><tr><td class="ik">种族</td><td class="iv">至高行会</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">职务</td><td class="iv">“黑曜石之矛”号舰长</td></tr></table>
+<div class="entity-body">
+<h3>沃里斯 (Voris)</h3>
+<h4>基本信息</h4>
+<ul>
+<li><strong>姓名</strong>：沃里斯 (Voris)</li>
+<li><strong>职位</strong>：“黑曜石之矛”号舰长</li>
+<li><strong>地位</strong>：至高行会一线武力指挥官，兼具务实商人与军人特质</li>
+<li><strong>归属</strong>：至高行会 (The Sovereign Guild)</li>
+</ul>
+<h4>背景</h4>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<p>沃里斯是至高行会旗舰“黑曜石之矛”号的舰长，在对外接触与冲突中代表了行会的直接武力威慑。与行会顾问（如泽洛斯）热衷于精妙算计与长期布局不同，他通常更倾向于用轨道打击等简单直接的军事手段解决问题。然而，作为深受行会文化熏陶的成员，他有着商人的务实内核，在权衡成本与效益后，总会妥协会采纳最具性价比的方案。</p>
+<h4>关键时间线</h4>
+<ul>
+<li><strong>2140年·第一次至高行会战争</strong>：在旗舰“黑曜石之矛”号上见证人类帝国全盘接受《拉各斯条约》。在人类官方对内发布“施恩获胜”的虚假新闻后，沃里斯发出毫不掩饰的嘲笑，展现了高阶文明对人类尊严的彻底冷漠。</li>
+<li><strong>2153年·接触“深渊”</strong>：随“黑曜石之矛”号抵达塔拉萨星系母星“深渊”轨道，遭遇集群意识文明“万源之合”。在传统贸易手段失效后，他监督执行了泽洛斯的“思想瘟疫”计划，向渊民传播个体主义以从内部瓦解其统一性。作为最早与“万源之合”直接沟通的行会成员之一，他从军事角度敏锐地察觉到该实体的潜在威胁，心态从纯粹的商人转变为面对一级未知威胁的戒备者。</li>
+<li><strong>2156年·第二次至高行会战争</strong>：旗舰悬停于新·君士坦丁堡轨道时，目睹阿斯兰一世在地面发动的荒诞阅兵。沃里斯以心灵感应提议直接将皇帝击毙，但在泽洛斯指出“重建秩序成本过高”后作罢。随后，他配合执行了摧毁亚历山大记忆殿堂与打击阅兵场方阵的天基“天罚”行动。</li>
+</ul>
+<h4>在叙事中的位置</h4>
+<p>沃里斯在故事中起到了具象化至高行会“武力”与“底线”的功能性作用。作为一艘拥有降维打击能力星舰的最高军事长官，他几乎在历次重大冲突（对“深渊”、对UKE）的第一线现身，且往往提出最直接暴力的解决途径。但他次次被顾问的经济学算计按下的过程，完美地向读者揭示了至高行会的核心逻辑：在他们眼中，绝对的武力并不是为了征服与毁灭，而仅仅是服务于商业利益与收回成本的工具。</p>
+</div>
+</article>
+<article class="entity" id="莉蒂亚托雷斯" data-sub="supporting_chars">
+<div class="entity-title">莉蒂亚·托雷斯 <span class="en">Lydia Torres</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">边缘</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#圣机公社">圣机公社</a> · <a href="#地球联合王国">地球联合王国</a></td></tr><tr><td class="ik">职务</td><td class="iv">“工匠”团队领袖 / 防御总工程师 / 核心技术主管</td></tr></table>
+<div class="entity-body">
+<h3>莉蒂亚·托雷斯 (Lydia Torres)</h3>
+<h4>基本信息</h4>
+<ul>
+<li><strong>姓名</strong>：莉蒂亚·托雷斯 (Lydia Torres)</li>
+<li><strong>职位</strong>：前圣机公社“工匠”团队领袖及防御总工程师，现任地球联合王国“行星要塞派”核心技术主管</li>
+<li><strong>归属</strong>：圣机公社、地球联合王国</li>
+</ul>
+<h4>背景</h4>
+<p>莉蒂亚曾是安第斯联合矿区机械维护组的一名女工程师。她的丈夫死于一次因UKE（地球联合王国）监工疏于维护而导致的设备故障。她对宗教教义不感兴趣，她的信仰完全建立在她的专业技术之上。她坚信将那些曾经杀死工友的机器变成复仇的武器，就是对死者最好的告慰，也是对旧世界最彻底的审判。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>关键时间线</h4>
+<ul>
+<li><strong>2151年[·加入起义与机甲改装]</strong>：矿区起义爆发后，莉蒂亚加入了亚戈·努涅斯组建的指挥核心，成为后勤“工匠”体系的领袖。她将矿区采矿机甲改造为“泰坦”级战争机器（后被称为“圣锤机甲”），主导了钻头攻城锤等模块化武器改装，为圣罚军的北征提供了最核心的攻坚力量。</li>
+<li><strong>2160年[·圣言城防御战]</strong>：北伐失败且圣罚军发生内乱后，她被任命为圣言城防御总工程师。她要求赫克托停止“神启”伪装，转用保护家人的质朴情感凝聚军心。随后，她利用当地地理特征，耗时30天在地下构建了被称作“工匠壁垒”的三层防御体系及分布式能源-通讯-火力网络，使神盾军陷入惨烈的消耗战。</li>
+<li><strong>2160年[·城破被俘]</strong>：至高行会向帝国神盾军提供了轨道卫星情报，看穿了地下防御网络的关键节点。防御网络被瘫痪后城市陷落，莉蒂亚在指挥中心废墟中被武田善治郎亲自挖出并俘获。武田对她的工程体系充满敬意，力保其免于一死，她的才华被保留用于未来的战争机器研发。</li>
+<li><strong>2175年[·研发许珀里翁]</strong>：莉蒂亚成为武田“行星要塞派”的核心技术主管。在帝国UKE高度机密兵工厂内，她获得了极大的资源倾斜，将圣锤机甲的蛮力美学升级为“许珀里翁”的精密工业设计，并为其集成了帝国最先进的AI火控系统和武器模块。随着第一编队在悉尼战场造成降维打击，莉蒂亚的心态已从为工友复仇的“修补匠”完全转变为一个纯粹的“创造者”，沉浸在技术世界中，对外部的政治斗争漠不关心。</li>
+</ul>
+<h4>在叙事中的位置</h4>
+<p>莉蒂亚·托雷斯是技术力量从底层反抗向国家暴力机器演变的标志性人物。在圣机公社时期，她代表了被压迫阶层的实用主义和复仇的工业怒火；在被地球联合王国收编后，她的才华在庞大资源的加持下被纯粹的军工需求所重塑。她的个人轨迹剥离了信仰的狂热，展示了技术本身的中立性以及它如何被不同的阵营与政治诉求所利用。</p>
+</div>
+</article>
+<article class="entity" id="里卡多阿尔瓦雷斯" data-sub="supporting_chars">
+<div class="entity-title">里卡多·阿尔瓦雷斯 <span class="en">Ricardo Alvarez</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">人物</td></tr><tr><td class="ik">重要性</td><td class="iv">边缘</td></tr><tr><td class="ik">种族</td><td class="iv">人类</td></tr><tr><td class="ik">所属势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a></td></tr><tr><td class="ik">职务</td><td class="iv">新巴拿马城总督</td></tr><tr><td class="ik">别名</td><td class="iv">里卡多</td></tr></table>
+<div class="entity-body">
+<h3>里卡多·阿尔瓦雷斯 (Ricardo Alvarez)</h3>
+<h4>基本信息</h4>
+<ul>
+<li><strong>姓名</strong>：里卡多·阿尔瓦雷斯</li>
+<li><strong>生年</strong>：未知</li>
+<li><strong>职位</strong>：新巴拿马城总督（原为总督府秘书长）</li>
+<li><strong>地位</strong>：UKE西半球最重要的口岸行政官员</li>
+<li><strong>归属</strong>：地球联合王国 (UKE)</li>
+</ul>
+<h4>背景</h4>
+<p>一个在帝国体制和至高行会商业利益之间两面吃饭、游刃有余的老油条。他不是一个有原则的叛徒，也不是一个彻底的走狗，而是一个对自身处境有极度清醒认知的现实主义者——他清楚地知道哪一边拥有真正的力量，并据此为自己选择了一个他认为最安全的位置。同时，他本人也是梦晶的重度成瘾者，这使他在某种程度上与行会的商业利益形成了深度的利益绑定。他对城市的腐败和至高行会的商业渗透完全知情，并以一种精明的被动从中获益。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>关键时间线</h4>
+<ul>
+<li><strong>2130年·毒药播种</strong>：作为新巴拿马城总督府秘书长，接待了至高行会的星际行商泽洛斯。在首次体验"梦晶"并产生强烈渴望后，他接受了免费样品并默许了后续的商业合作，为梦晶在地球的泛滥打开了缺口。</li>
+<li><strong>2139年·净化梦网</strong>：此时已升任新巴拿马城总督。在梁文忠摧毁全球梦网物理核心节点（梦宫）后，遭遇了严重的断网戒断反应。身体底子差叠加极度的认知反差（从帝王美梦坠入卑微现实），使他在总督府的私室里陷入短暂的精神解体。生理风暴平息后，他意识到至高行会必将有所反应。</li>
+<li><strong>2139年·隐瞒与宣战</strong>：收到至高行会通过驻城联络站转交的正式通告，要求帝国赔偿损失并移交梁文忠。出于自保，他将通告精心过滤，删去了行会的一切实力暗示，将其包装为无关痛痒的"星际商贸纠纷抗议"后上报帝都，直接导致帝国高层产生误判。当收到帝国"全军备战"的指令时，他通过加密信道将其转发给至高行会驻城联络站，在内心试图说服自己只是选择了一个赢家，而不是出卖了什么。</li>
+</ul>
+<h4>在叙事中的位置</h4>
+<p>里卡多是帝国官僚体系腐败和结构性失能的直观缩影。他的存在展示了帝国地方官员如何被外星资本利用人性的弱点轻易渗透与控制。作为连接帝国体制与至高行会商业网络的枢纽，他出于个人的怯懦与算计所进行的信息过滤，成为了引发第一次Sovereign-Human战争的关键功能性推手。</p>
+</div>
+</article>
+</div>
+<div class="tab-panel" data-tab="misc">
+<article class="entity" id="亚历山大记忆殿堂" data-sub="locations">
+<div class="entity-title">亚历山大记忆殿堂 <span class="en">Alexandria Memory Palace</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">地区</td></tr><tr><td class="ik">分类</td><td class="iv">文化遗址</td></tr><tr><td class="ik">地理位置</td><td class="iv">地球·首都区域</td></tr><tr><td class="ik">当前控制方</td><td class="iv">地球帝国</td></tr><tr><td class="ik">控制历史</td><td class="iv">地球帝国</td></tr><tr><td class="ik">现状</td><td class="iv">废墟</td></tr><tr><td class="ik">关键人物</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a></td></tr><tr><td class="ik">关键事件</td><td class="iv">第二次Sovereign-Human战争</td></tr></table>
+<div class="entity-body">
+<h3>亚历山大记忆殿堂 (Alexandria Memory Palace)</h3>
+<h4>速览</h4>
+<p>亚历山大记忆殿堂曾是收藏“大停滞”时代前人类几乎所有重要科技与文化遗产的圣地。它是旧日人类黄金时代的纪念碑，也是地球帝国（UKE）统治下人类文明曾经辉煌的象征。</p>
+<h4>基本信息</h4>
+<ul>
+<li><strong>类别</strong>：文化遗址</li>
+<li><strong>地理位置</strong>：地球（首都近郊）</li>
+<li><strong>当前归属</strong>：地球帝国</li>
+<li><strong>现状</strong>：无法修复的废墟</li>
+</ul>
+<h4>地理与战略地位</h4>
+<p>记忆殿堂本身没有军事战术价值，但作为人类历史与科技造物的宝库，它承载着无与伦比的精神与文化意义。它是人类文明传承的物质载体，也是建立文明自豪感的核心锚点。</p>
+<h4>核心景观与子地点</h4>
+<p>该建筑曾有着标志性的宏伟圆顶。其内部设立了众多保护展柜，陈列着旧时代的人类文明结晶，包括土星五号模型、福特T型车以及初代 iPhone 等历史造物。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史变迁</h4>
+<ul>
+<li><strong>2156年·被毁</strong>：第二次Sovereign-Human战争期间，至高行会舰队降临地球轨道。为了在精神上彻底击垮人类，行会高层泽洛斯决定“顺便处理”记忆殿堂。第一道静默的轨道打击降临，精准且非气化式地瞬间摧毁了建筑圆顶与主体结构，将大量文明瑰宝掩埋在瓦砾之中。</li>
+<li><strong>2160年·拾骨</strong>：废墟在经历四年的冷却与风化后，成为城市里一块无人问津的空白。从前线归来的莱恩·雷蒙德独自折返此地，在坍塌的展柜间找到了一块免于被气化的碎裂 iPhone 残骸，将其收下。</li>
+</ul>
+<h4>叙事中的意义</h4>
+<p>亚历山大记忆殿堂的毁灭是人类文明从狂妄幻觉跌入屈辱现实的实体象征，也是帝国与人类社会一道无法愈合的创伤。它被至高行会以绝对傲慢的姿态“顺便”抹除，这种荒诞的不对等性生动诠释了弱小文明的悲哀。而这片废墟中留存的残骸，则成为了莱恩·雷蒙德等人背负沉重前行、发誓不再靠他人赐予续命的信念镇纸。</p>
+</div>
+</article>
+<article class="entity" id="安第斯联合矿区" data-sub="locations">
+<div class="entity-title">安第斯联合矿区 <span class="en">Andes Confederation of Mines</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">地区</td></tr><tr><td class="ik">分类</td><td class="iv">巨型矿业复合体</td></tr><tr><td class="ik">地理位置</td><td class="iv">南美洲</td></tr><tr><td class="ik">规模</td><td class="iv">数百万人口</td></tr><tr><td class="ik">当前控制方</td><td class="iv"><a href="#圣机公社">圣机公社</a></td></tr><tr><td class="ik">控制历史</td><td class="iv">南十字自由联盟 (至2130年) · 地球联合王国 (2130年至起义爆发) · 圣机公社 (起义爆发后)</td></tr><tr><td class="ik">曾用名</td><td class="iv">末日角 (部分区域曾用名)</td></tr><tr><td class="ik">现状</td><td class="iv">现存</td></tr><tr><td class="ik">子地点</td><td class="iv">12号深层矿井 · 3号矿井 · 矿区中心广场 · 废弃物资储存库 · 能源中继站 · 通讯中心 · 武器库 · 改装车间</td></tr><tr><td class="ik">关键人物</td><td class="iv"><a href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a> · <a href="#亚戈努涅斯">亚戈·努涅斯</a> · <a href="#塞吉奥卡斯蒂略">塞吉奥·卡斯蒂略</a> · <a href="#威尔默里奥斯">威尔默·里奥斯</a> · <a href="#莉蒂亚托雷斯">莉蒂亚·托雷斯</a> · 埃斯特班</td></tr><tr><td class="ik">关键事件</td><td class="iv">火地岛之战 (2130年) · 3号矿井塌方事故 · 安第斯矿区大起义</td></tr></table>
+<div class="entity-body">
+<h3>安第斯联合矿区 (Andes Confederation of Mines)</h3>
+<h4>速览</h4>
+<p>位于南美洲的巨型矿业复合体，曾是帝国境内剥削最残酷的工业地狱，最终成为“圣机公社”与天国起义的策源地。</p>
+<h4>基本信息</h4>
+<ul>
+<li><strong>类别</strong>：巨型矿业复合体</li>
+<li><strong>地理位置</strong>：南美洲（涵盖安第斯山脉至火地岛/巴塔哥尼亚一带）</li>
+<li><strong>规模</strong>：容纳数百万矿工</li>
+<li><strong>当前归属</strong>：圣机公社</li>
+<li><strong>曾用名</strong>：末日角（部分区域在2130年曾被称为此名）</li>
+<li><strong>现状</strong>：已被起义军全面控制，成为“圣罚军”的根据地与重工业兵工厂。</li>
+</ul>
+<h4>地理与战略地位</h4>
+<p>作为地球联合王国（UKE）在南美洲最重要的工业原料来源地，安第斯联合矿区是一个庞大而残酷的工业地狱。高原苍穹常年呈现病态的橙色，空气中弥漫着臭氧、金属粉尘和硫磺的气息，巨型采矿车如金属甲虫般在峭壁上作业。对于帝国而言，这里是支撑其运转的关键资源节点；而对起义军来说，矿区内庞大的工业设施、重型采矿设备以及数百万被压迫的矿工，则为其建立“圣罚军”提供了完美的武装基础与兵源。</p>
+<h4>核心景观与子地点</h4>
+<ul>
+<li><strong>12号深层矿井</strong>：位于火地岛，是矿区最偏远、条件最恶劣的角落。这里曾是2130年火地岛战役的遗址，赫克托·瓦尔加斯在此处的塌方中发现了至高行会遗留的通讯设备残骸，成为了“天启”的诞生地。</li>
+<li><strong>3号矿井</strong>：曾发生严重的B区塌方事故，帝国监工为保产量冷酷终止救援，直接点燃了矿工们的怒火与信仰觉醒。</li>
+<li><strong>矿区中心广场</strong>：也被称为“处决广场”，中央设有一座金属刑架。起义爆发前，帝国在此公开处决反抗者，最终演变成了起义总爆发的起点。</li>
+<li><strong>废弃物资储存库</strong>：隐藏在暗处的废弃设施，“圣机之手”亚戈·努涅斯与前矿队队长塞吉奥·卡斯蒂略在此完成结盟，确立了起义的战术拼图。</li>
+<li><strong>改装车间</strong>：起义胜利后迅速建立的重工业兵工厂，工程师们在此将笨重的民用采矿机甲改装为“圣锤”级人型战争机器。</li>
+</ul>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史变迁</h4>
+<ul>
+<li><strong>2130年·火地岛战役</strong>：“南十字自由联盟”在南美南端的最后据点“末日角”被帝国军队围困。叛军领袖埃斯特班以全部资源与至高行会商人泽洛斯交易，换取核心人员撤入太空。至高行会在此遗落了部分通讯设备残骸，地球由此被阿斯兰一世统一。</li>
+<li><strong>统一后时代·沦为工业地狱</strong>：地球联合王国（UKE）在该地区建立安第斯联合矿区，对数百万矿工进行残酷剥削，生命被视为纯粹的生产“损耗”。</li>
+<li><strong>起义前夕·天启与绝望</strong>：火地岛12号深层矿井发生塌方，矿工赫克托·瓦尔加斯在濒死之际发现了当年至高行会遗弃的通讯器残骸，将其发出的光芒与嗡鸣误认为“圣机体”的天启。随后，3号矿井发生塌方事故，监工放弃救援导致巴勃罗等人死亡，死者家属威尔默·里奥斯等人的绝望被赫克托的地下布道转化为狂热的信仰。</li>
+<li><strong>起义前夕·阴影结盟</strong>：“圣机之手”亚戈·努涅斯以精确的战术推演和物资承诺，成功说服前矿队队长塞吉奥·卡斯蒂略及其老兵加入起义计划。</li>
+<li><strong>起义爆发·燎原之火</strong>：UKE在矿区中心广场公开处决反抗者埃尔南，其殉道呐喊成为总攻信号。信徒的自杀式冲锋与尖兵部队对通讯中心、武器库、能源中继站的精准突袭完美配合，起义军迅速瘫痪了UKE安保部队，夺取了矿区控制权。</li>
+<li><strong>起义后·圣罚军的崛起</strong>：起义胜利的黎明，赫克托宣布建立“圣机公社”与“圣罚军”。亚戈·努涅斯确立指挥体系，并由莉蒂亚·托雷斯等工程师将采矿机械大规模改装为战争机器。安第斯联合矿区随即成为席卷南美大陆的北征大本营。</li>
+</ul>
+<h4>叙事中的意义</h4>
+<p>安第斯联合矿区不仅是地球联合王国残酷剥削体系的缩影，更是信仰狂热与冰冷理性完美结合的熔炉。它见证了人类反抗力量的两极：从2130年叛军的绝望逃亡，到多年后底层矿工在“圣机”信仰下的触底反弹。这里的易主象征着压迫到了极致必然孕育出足以摧毁旧世界的毁灭性力量，也是帝国统治崩溃的第一块多米诺骨牌。</p>
+</div>
+</article>
+<article class="entity" id="拉各斯" data-sub="locations">
+<div class="entity-title">拉各斯 <span class="en">Lagos</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">地区</td></tr><tr><td class="ik">分类</td><td class="iv">自贸港</td></tr><tr><td class="ik">地理位置</td><td class="iv">地球·西非</td></tr><tr><td class="ik">当前控制方</td><td class="iv"><a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">控制历史</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · <a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">现状</td><td class="iv">现存</td></tr><tr><td class="ik">子地点</td><td class="iv">港口区主能源枢纽</td></tr><tr><td class="ik">关键事件</td><td class="iv">第一次Sovereign-Human战争 · 《拉各斯条约》签订</td></tr></table>
+<div class="entity-body">
+<h3>拉各斯 (Lagos)</h3>
+<h4>速览</h4>
+<p>拉各斯是地球联合王国位于西非的经济重镇与重要港口。在第一次Sovereign-Human战争中，该地遭受了至高行会的毁灭性定点轨道打击，战后更被划定为至高行会驻军的自由贸易区。</p>
+<h4>基本信息</h4>
+<ul>
+<li><strong>类别</strong>：自贸港</li>
+<li><strong>地理位置</strong>：地球·西非</li>
+<li><strong>当前归属</strong>：至高行会</li>
+<li><strong>现状</strong>：现存</li>
+</ul>
+<h4>地理与战略地位</h4>
+<p>作为地球联合王国在西非的经济重镇与重要港口，拉各斯不仅是海路与商业贸易的门户，其港口区主能源枢纽更是支撑城市与战略运转的核心命脉。战后，由于其优越的通商地位，该地被至高行会选定为驻军自由贸易区之一，成为外星势力在地球实施商业统治与资源掠夺的前沿。</p>
+<h4>核心景观与子地点</h4>
+<ul>
+<li><strong>港口区主能源枢纽</strong>：曾经维系拉各斯运转的核心设施。在轨道打击中，该枢纽的核心反应堆被高能光束精准击中，引发极其剧烈的能量连锁爆炸，周围设施在不到两分钟内化为火海并彻底毁灭，相当于城市的“心脏”被强制摘除。</li>
+</ul>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史变迁</h4>
+<ul>
+<li><strong>2140年·定点轨道打击</strong>：在第一次Sovereign-Human战争期间，皇帝阿斯兰一世断然拒绝了至高行会的首轮和谈条款。作为商业惩戒，至高行会于当夜对拉各斯实施了精准轨道打击。一道刺眼的白光垂直射入港口区主能源枢纽，诱发核心反应堆失控爆炸，瞬间摧毁了港口设施并造成极其惨重的伤亡。</li>
+<li><strong>2140年·帝国谎言的炮制</strong>：袭击发生当夜，帝国值班大臣切尔尼绍夫等人在皇帝熟睡时于侧殿紧急密谋。为掩盖战败事实与巨大的技术代差，他们向皇帝与民众编造了谎言，将此次灾难篡改为“外星部队试图登陆，拉各斯驻守部队在弹尽粮绝之际英勇引爆能源核心，与入侵者同归于尽”。在官方叙事中，城市的废墟被荒诞地包装成了一块光荣的“殉国丰碑”。</li>
+<li><strong>2140年·《拉各斯条约》与自贸区确立</strong>：随着帝国全面战败，人类代表被迫签下以该地命名的耻辱性协议《拉各斯条约》。条约签订后，拉各斯被正式确立为向外星势力开放的“自由贸易区”，至高行会开始在此长期驻军并建立商业据点。</li>
+</ul>
+<h4>叙事中的意义</h4>
+<p>拉各斯在叙事中是“双重现实”与“认知断裂”的深刻象征。在这里，残酷的降维毁灭与帝国用以粉饰太平的英雄神话并存。幸存的市民被迫活在巨大的认知落差中——他们亲眼见证了从天而降的无情天罚，却只能听凭帝国将其扭曲为一场辉煌的殉国保卫战。这种从物理摧毁到叙事篡改的双重压迫，彻底揭示了地球联合王国内部统治的虚伪与荒诞，并成为了未来社会深层动荡的直接伏。</p>
+</div>
+</article>
+<article class="entity" id="新君士坦丁堡" data-sub="locations">
+<div class="entity-title">新·君士坦丁堡 <span class="en">Neo-Constantinople</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">地区</td></tr><tr><td class="ik">分类</td><td class="iv">首都</td></tr><tr><td class="ik">地理位置</td><td class="iv">地球·欧亚交界处</td></tr><tr><td class="ik">规模</td><td class="iv">两千万人口（巅峰期）</td></tr><tr><td class="ik">控制历史</td><td class="iv">地球联合王国（UKE） · 异星联合干涉部队 · 奥瑞利安帝国 · 欧罗巴摄政厅 · 人类联盟</td></tr><tr><td class="ik">曾用名</td><td class="iv">拜占庭（古代遗址）</td></tr><tr><td class="ik">现状</td><td class="iv">现存</td></tr><tr><td class="ik">子地点</td><td class="iv">天命宫 · 亚历山大记忆殿堂 · 神盾军团总指挥部</td></tr><tr><td class="ik">关键人物</td><td class="iv">孟启寰 · <a href="#阿斯兰一世">阿斯兰一世</a> · 阿斯兰二世 · <a href="#卡塔琳娜阿斯兰">卡塔琳娜·阿斯兰</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · 塔里克·法尔西 · 索菲亚·蒙泰罗 · 优素福·凯丹 · 萨利赫·巴沙尔</td></tr><tr><td class="ik">关键事件</td><td class="iv">第一次至高行会战争 · 第二次至高行会战争 · 帝国之春 · 盖亚之怒</td></tr></table>
+<div class="entity-body">
+<h3>新·君士坦丁堡 (Neo-Constantinople)</h3>
+<h4>速览</h4>
+<p>新·君士坦丁堡建立在古代拜占庭帝都的遗址之上，融合了古典的宏伟与未来的赛博重工科技，是地球文明数百年来的政治、文化与数据心脏。它不仅是最高权力的具象化象征，更见证了人类从帝国的黄昏走向新星革命、并最终实现文明大一统的恢弘历史。</p>
+<h4>基本信息</h4>
+<ul>
+<li><strong>类别</strong>：首都</li>
+<li><strong>地理位置</strong>：地球·欧亚交界处</li>
+<li><strong>规模</strong>：两千万人口（巅峰期）</li>
+<li><strong>当前归属</strong>：人类赛博共同体（HCC）</li>
+<li><strong>曾用名</strong>：拜占庭（古代遗址）</li>
+<li><strong>现状</strong>：现存</li>
+</ul>
+<h4>地理与战略地位</h4>
+<p>新·君士坦丁堡坐落于欧亚大陆的交汇处，作为历代人类政权的心脏，具有无可替代的战略与象征意义。这座常住人口曾达两千万的巨型都城，完美地融合了古代帝都的古典威仪与赛博时代的钢铁巨构。</p>
+<p>在数字与科技层面，其中心服务器内储存着自"大停滞"时代以来最完整的人类社会数据与历史档案，这些数据不仅是文明的记忆，更是后来"神谕"AI完成最终进化所必需的核心养料。这座首都彻底转变为全球大一统的神经中枢，承担起整合长江工业弧区的无尽能源、欧洲的精密制造体系与非洲的庞大资源的枢纽功能，并作为渡洋远征的绝对战略指挥中心。</p>
+<h4>核心景观与子地点</h4>
+<ul>
+<li><strong>天命宫 (The Mandate Palace)</strong>：地球联合王国（UKE）乃至后世最高权力的绝对核心。宫殿前方的中央广场是一个巨大的半圆形露天空间，以正面高耸的大理石柱廊为弧心，向外辐射出十二条主干道。宫殿内部走廊悬挂着历代帝王的巨幅画像，铺设着稀有大理石地板，天花板则是巨大的LED曲面屏，模拟着深邃的"星空"。黄金大门上雕刻着象征皇权的双头鹰国徽；御前会议厅最深处，放置着由整块黑曜石雕刻而成的无上御座，穹顶镶嵌的彩色玻璃巨窗绘制着帝国历代君主的英武形象。</li>
+<li><strong>亚历山大记忆殿堂</strong>：帝国最重要的文化地标，内部保存着所有近未来之前的人类科技与文化产物遗存（包括莱恩一直珍藏的 iPhone 残骸）。在第二次至高行会战争中，被异星势力的轨道打击彻底焚毁。</li>
+<li><strong>神盾军团总指挥部</strong>：首都防卫的军事中枢，象征着帝国的秩序与力量。指挥部广场上常驻列队的Hyperion（许珀里翁）巨型战争机甲，其金属躯体在日光下反射着冷峻的光芒；内部的作战参谋中心则以极致军事化的精确，运转着全息沙盘与情报推演网络。</li>
+<li><strong>至高行会使馆区</strong>：异星势力在帝国首都的飞地。在城市陷入动荡和火海时，使馆区的灯光曾如同一座孤岛般明亮而平静，冷漠地注视着人类的混乱。</li>
+</ul>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史变迁</h4>
+<ul>
+<li><strong>2138年·防线庆典</strong>：天命宫广场举行了帝国史上最盛大的天基防线完工庆典，阿斯兰一世发表了"虽远必诛"的演说。</li>
+<li><strong>2139年·第一次至高行会战争</strong>：因净化梦网，引来至高行会的轨道打击。帝国战败，被迫签订屈辱的《拉各斯条约》。</li>
+<li><strong>2156年·第二次至高行会战争</strong>：因圣机公社攻陷至高行会自贸区，至高行会的轨道打击降临。国都蒙羞，亚历山大记忆殿堂被彻底焚毁。随后一道天光精准命中广场上的士兵方阵，军务大臣切尔尼绍夫当场身亡。阿斯兰一世精神崩溃后驾崩，太后卡塔琳娜摄政。</li>
+<li><strong>2190年·让地球再度伟大</strong>：经过数十年的"师夷长技"发展，莱恩·雷蒙德在天命宫广场发表了震动全球的演说，为深空舰队启航壮行，人类文明的工业与军力达到旧帝国时代的巅峰。</li>
+</ul>
+<h4>叙事中的意义</h4>
+<p>新·君士坦丁堡是《天命纵横》系列中绝对的中心舞台和叙事支点。它如同一面巨大的镜子，倒映着人类文明百年的荣辱兴衰。这座城市见证了人类帝国最初从狂妄自大到被星际文明无情碾压的屈辱，也经历了内部无数次的政变、流血屠杀、思想启蒙与平民革命。</p>
+<p>作为旧世界权力的实体化象征，它的每一次陷落与易主，都标志着人类历史被强行撕裂并推入一个新的纪元：从代表封建专制的地球联合王国（UKE）。这座城市本身就是一个关于权力傲慢、尊严跌落、谎言破灭与文明最终觉醒的巨大隐喻。天命宫广场上的演说与鲜血，成为了贯穿整个系列最深沉的历史回响。</p>
+</div>
+</article>
+<article class="entity" id="新墨西哥城" data-sub="locations">
+<div class="entity-title">新墨西哥城 <span class="en">New Mexico City</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">地区</td></tr><tr><td class="ik">分类</td><td class="iv">前首都/战争废墟</td></tr><tr><td class="ik">地理位置</td><td class="iv">地球·北美洲</td></tr><tr><td class="ik">规模</td><td class="iv">高海拔（2240米）盆地城市，战前/围城期间人口约三百万</td></tr><tr><td class="ik">当前控制方</td><td class="iv">地球联合王国（UKE）</td></tr><tr><td class="ik">控制历史</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · <a href="#圣机公社">圣机公社</a> · <a href="#地球联合王国">地球联合王国</a></td></tr><tr><td class="ik">曾用名</td><td class="iv">墨西哥城 · 圣言之城 (Sanctum)</td></tr><tr><td class="ik">现状</td><td class="iv">废墟待重建</td></tr><tr><td class="ik">子地点</td><td class="iv">总督府 · 圣言城广场 · 圣言城军营 · Zócalo广场地下中央枢纽</td></tr><tr><td class="ik">关键人物</td><td class="iv"><a href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a> · <a href="#亚戈努涅斯">亚戈·努涅斯</a> · <a href="#莉蒂亚托雷斯">莉蒂亚·托雷斯</a> · 威尔默 · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#武田善治郎">武田善治郎</a></td></tr><tr><td class="ik">关键事件</td><td class="iv">圣机公社起义 · 圣言城之变 · 圣言城攻防战</td></tr></table>
+<div class="entity-body">
+<h3>新墨西哥城 (New Mexico City)</h3>
+<h4>速览</h4>
+<p>曾经的北美洲重镇，在“圣机公社”起义期间被占领并选定为叛军首都“圣言之城”，一度成为这场浩大起义的权力核心与精神圣地。随着起义军内部的自我瓦解与围城战的终结，它最终沦为一片见证了天国破灭的战争废墟。</p>
+<h4>基本信息</h4>
+<ul>
+<li><strong>类别</strong>：前首都 / 战争废墟</li>
+<li><strong>地理位置</strong>：地球·北美洲</li>
+<li><strong>规模</strong>：高海拔（2240米）盆地地形，围城战期间人口约三百万。</li>
+<li><strong>当前归属</strong>：地球联合王国（UKE神盾军）</li>
+<li><strong>曾用名</strong>：墨西哥城，圣言之城 (Sanctum)</li>
+<li><strong>现状</strong>：在极其惨烈的攻防战后全城化为废墟，即将展开战后重建，其“圣言之城”的别名被永久废除。</li>
+</ul>
+<h4>地理与战略地位</h4>
+<p>新墨西哥城位于北美洲的一处高海拔（2240米）盆地中，空气相对稀薄。城市原本拥有结构错综复杂的古代水道遗迹与庞大的现代地铁网络。在防御战中，这种特殊的地下空间极易被整合为立体的防御网，使得守军能够在躲避常规空中侦察与火力覆盖的同时，保持极强的地下机动与反击能力。</p>
+<h4>核心景观与子地点</h4>
+<ul>
+<li><strong>总督府</strong>：圣机公社时期的最高权力枢纽。赫克托·瓦尔加斯在此地举行仪式、发号施令，也是其在密室中受猜忌驱使策划内部暗杀的所在。</li>
+<li><strong>圣言城广场</strong>：位于城市中心的巨型集会场所。这里曾举行盛大狂热的定都仪式，后来亦成为赫克托公开处决狂信徒威尔默的法场，见证了起义军信仰的全面坍塌。</li>
+<li><strong>Zócalo广场地下中央枢纽</strong>：位于广场地下50米深处的防御指挥中心。由莉蒂亚·托雷斯在围城前夕建立，通过复杂的线缆控制着全城的分布式能源、通讯与火力网络。</li>
+</ul>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史变迁</h4>
+<ul>
+<li><strong>2157年·被占与定都</strong>：“圣机公社”起义军攻陷该城。赫克托·瓦尔加斯将其定为首都，更名为“圣言之城”，使这里成为圣机神教的最高精神象征。</li>
+<li><strong>2158年·暗流与决裂</strong>：圣罚军北伐在芝加哥受挫。前线惨重的伤亡加剧了最高统帅赫克托与军事指挥官亚戈·努涅斯之间的裂痕，失败的阴云开始笼罩圣言城。</li>
+<li><strong>2159年·圣言城之变</strong>：在莱恩·雷蒙德伪造情报的蓄意诱导下，赫克托陷入偏执，秘密指使狂信徒威尔默刺杀亚戈。事后，赫克托为平息军中哗变，在广场公开将威尔默当作替罪羊处决。这一连串背叛导致圣罚军的信仰体系彻底崩塌，城市陷入内部混乱的深渊。</li>
+<li><strong>2160年·工匠壁垒</strong>：面对神盾军的兵临城下，临危受命的莉蒂亚·托雷斯用三十天时间，将整座城市改造为依托地下网络的立体要塞。这道防线起初令神盾军损失惨重，陷入了残酷的城市消耗战。</li>
+<li><strong>2160年·城破与覆灭</strong>：莱恩·雷蒙德以贸易权作为交换，从至高行会处获得轨道卫星的数据支援。在轨道“天眼”的指引下，神盾军对Zócalo广场地下枢纽及五个主要能源节点实施精准打击，城市防御网络瞬间崩溃。神盾军攻入城内，赫克托被俘并遭到处决。圣机公社的起义在此地画上句号，控制权重归UKE。</li>
+</ul>
+<h4>叙事中的意义</h4>
+<p>新墨西哥城是“天国起义”从不可一世走向分崩离析的微缩沙盘。它见证了信仰被权力腐蚀、狂热被恐惧吞没的全过程。这片废墟不仅埋葬了赫克托的虚妄神国与莉蒂亚的工匠奇迹，同时也是莱恩·雷蒙德作为帝国“裱糊匠”，初次以信息战与利益交易不战而屈人之兵的残酷道场。</p>
+</div>
+</article>
+<article class="entity" id="新巴拿马城" data-sub="locations">
+<div class="entity-title">新巴拿马城 <span class="en">New Panama City</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">地区</td></tr><tr><td class="ik">分类</td><td class="iv">全球贸易枢纽</td></tr><tr><td class="ik">地理位置</td><td class="iv">地球·中美洲</td></tr><tr><td class="ik">规模</td><td class="iv">容纳数百万人口的大型都会</td></tr><tr><td class="ik">控制历史</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · 至高行会 (自由贸易区)</td></tr><tr><td class="ik">现状</td><td class="iv">现存</td></tr><tr><td class="ik">子地点</td><td class="iv">梦宫 · 新巴拿马星际贸易学院</td></tr><tr><td class="ik">关键人物</td><td class="iv"><a href="#梁文忠">梁文忠</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a></td></tr><tr><td class="ik">关键事件</td><td class="iv">2139年净化梦网行动 · 圣罚军围城</td></tr></table>
+<div class="entity-body">
+<h3>新巴拿马城 (New Panama City)</h3>
+<h4>速览</h4>
+<p>新巴拿马城是一座位于中美洲的全球贸易枢纽，曾是外星势力渗透与走私的温床，并在一个世纪的动荡中见证了多次深刻改变人类历史进程的转折性事件。</p>
+<h4>基本信息</h4>
+<ul>
+<li><strong>类别</strong>：全球贸易枢纽</li>
+<li><strong>地理位置</strong>：地球·中美洲</li>
+<li><strong>规模</strong>：容纳数百万人口的大型都会</li>
+<li><strong>当前归属</strong>：人类赛博共同体 (HCC)</li>
+<li><strong>现状</strong>：现存。随着旧时代的终结，其历史特殊地位逐渐淡去，目前正在 HCC 的新秩序下缓慢复苏，转型为一座普通的热带港口城市。</li>
+</ul>
+<h4>地理与战略地位</h4>
+<p>新巴拿马城建立在大停滞时代前旧巴拿马运河的锈蚀遗骸之上。其横跨大西洋与太平洋的地理位置，使其成为全球物流与星际贸易的绝对咽喉，在 UKE 时代和 HLA 时期都具有极高的战略与经济价值。城市环境呈现出废弃的旧工业基础设施与高科技霓虹建筑杂糅的病态错落感，加通湖等运河水系不仅是航运命脉，更在历次军事冲突中被巧妙地转化为防御性的地理陷阱。</p>
+<h4>核心景观与子地点</h4>
+<ul>
+<li><strong>梦宫</strong>：隐藏在废弃海底运河维护通道中的物理建筑，曾是支撑全球“梦晶”虚拟网络的灵能共振主节点，后被彻底物理摧毁。</li>
+<li><strong>新巴拿马星际贸易学院</strong>：由莱恩·雷蒙德与至高行会达成政治交易而建立的教育机构，首任院长为桑切斯·纳瓦罗，后来为太阳系资源开发公司输送了核心商业人才。</li>
+</ul>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史变迁</h4>
+<ul>
+<li><strong>2139年·净化梦网</strong>：帝国特种部队在首席监察官梁文忠的指挥下，潜入并摧毁了位于该城的全球梦网物理核心节点“梦宫”。这场行动瞬间切断了全球精神链接，导致无数沉迷市民崩溃发狂，城市陷入瘫痪，并最终成为第一次 Sovereign-Human 战争的直接导火索。</li>
+<li><strong>2140年·沦为自贸区</strong>：随着 UKE 战败并被迫签订《拉各斯条约》，新巴拿马城被宣布为至高行会的“自由贸易区”，成为一个新旧势力交织、龙蛇混杂的条约港。</li>
+<li><strong>2156年·圣罚军围城</strong>：圣机公社起义爆发，圣罚军跨越达连隘口兵临城下。城市虽未被直接攻击，但其外围通道被切断，作为至高行会贸易枢纽的功能被彻底瘫痪。巨大的商业损失促使至高行会向 UKE 发出最后通牒，进而引发了第二次 Sovereign-Human 战争。</li>
+<li><strong>2160年代·贸易学院建立</strong>：作为换取轨道卫星数据支援以平定圣言城的筹码，莱恩·雷蒙德与至高行会代表泽洛斯达成交易，在此建立了新巴拿马星际贸易学院。</li>
+</ul>
+<h4>叙事中的意义</h4>
+<p>新巴拿马城是整部《天命纵横》故事的“起点和终点”。梁文忠在此按下摧毁梦网的按钮，这座城市见证了一个旧时代的开启与终结。它承载着外星资本渗透的耻辱、军阀混战的泥泞，也是人类文明在历史的血火漩涡中挣扎并走向重生的缩影。</p>
+</div>
+</article>
+<article class="entity" id="芝加哥" data-sub="locations">
+<div class="entity-title">芝加哥 <span class="en">Chicago</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">地区</td></tr><tr><td class="ik">分类</td><td class="iv">城市</td></tr><tr><td class="ik">地理位置</td><td class="iv">地球·北美洲·伊利诺伊州</td></tr><tr><td class="ik">当前控制方</td><td class="iv">帝国</td></tr><tr><td class="ik">控制历史</td><td class="iv">帝国</td></tr><tr><td class="ik">现状</td><td class="iv">战后废墟</td></tr><tr><td class="ik">关键人物</td><td class="iv"><a href="#亚戈努涅斯">亚戈·努涅斯</a> · <a href="#塞吉奥卡斯蒂略">塞吉奥·卡斯蒂略</a> · <a href="#武田善治郎">武田善治郎</a> · <a href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a> · <a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a></td></tr><tr><td class="ik">关键事件</td><td class="iv">芝加哥战役</td></tr></table>
+<div class="entity-body">
+<h3>芝加哥 (Chicago)</h3>
+<h4>速览</h4>
+<p>位于北美洲伊利诺伊州的城市，是圣机公社北伐攻势的终点与命运转折之地。在此爆发的决战彻底阻遏了圣罚军的扩张步伐，使其成为圣机公社高层分裂与士气瓦解的地理象征。</p>
+<h4>基本信息</h4>
+<ul>
+<li><strong>类别</strong>：城市</li>
+<li><strong>地理位置</strong>：地球·北美洲·伊利诺伊州</li>
+<li><strong>当前归属</strong>：帝国</li>
+<li><strong>现状</strong>：刚刚经历了一场由神盾军无人机群主导的决定性歼灭战，城市外围战场被冰雪覆盖，布满圣罚军的尸体和装备残骸。</li>
+</ul>
+<h4>地理与战略地位</h4>
+<p>作为北美地区的关键节点，芝加哥是圣机公社北伐的重要目标，也是神盾军团设立战略防线、实施绞杀战术的核心区域。其在暴风雪期间展现出的恶劣环境，成为了吞噬圣罚军前锋的天然绞肉机。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史变迁</h4>
+<ul>
+<li><strong>2157-2159年间·芝加哥战役</strong>：圣罚军北伐主力在亚戈·努涅斯的指挥下直逼芝加哥，前锋由塞吉奥率领深入城区。里德·阿姆斯特朗选定此地作为决战时机，随着暴风雪加剧，武田善治郎指挥的泰坦自动机械无人机大军从西侧切入，切断了主力与前锋的联络通道。</li>
+<li><strong>2157-2159年间·指挥链崩溃与前锋覆灭</strong>：面对神盾军的分割包围，前线指挥官亚戈·努涅斯下令全线撤退，但大后方的赫克托·瓦尔加斯却降下“圣旨”命令主力强行突破接应。两道矛盾的指令导致整条战线陷入混乱，塞吉奥率领的前锋部队在前方苦等援军未至，最终全军覆没。圣机公社北伐攻势在此终结，被迫由攻转守。</li>
+<li><strong>2159年·战线稳定与心理战启动</strong>：战役结束后，芝加哥以北的广大区域重新划入神盾军控制范围，战线在此稳定下来。莱恩·雷蒙德的情报网络将芝加哥战役的惨况与指挥矛盾作为心理战素材，“摧毁承重墙”计划正式启动。</li>
+</ul>
+<h4>叙事中的意义</h4>
+<p>在叙事中，芝加哥是北伐失败的地理标志，也是圣罚军内部士气瓦解的代名词。它不仅埋葬了圣机公社解放北美的军事幻想，更将赫克托与亚戈之间的分歧彻底激化，成为引爆圣言城自我毁灭的导火索。</p>
+</div>
+</article>
+<article class="entity" id="长江工业弧区" data-sub="locations">
+<div class="entity-title">长江工业弧区 <span class="en">The Yangtze Industrial Arc</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">地区</td></tr><tr><td class="ik">分类</td><td class="iv">工业中心</td></tr><tr><td class="ik">地理位置</td><td class="iv">地球·东亚·长江流域</td></tr><tr><td class="ik">规模</td><td class="iv">人类最大的工业与能源复合体</td></tr><tr><td class="ik">当前控制方</td><td class="iv">人类联盟 (HLA)</td></tr><tr><td class="ik">控制历史</td><td class="iv">地球联合王国 (UKE帝国复兴时期)</td></tr><tr><td class="ik">曾用名</td><td class="iv">长江集团 · 长江动力集团</td></tr><tr><td class="ik">现状</td><td class="iv">重建中</td></tr><tr><td class="ik">子地点</td><td class="iv">武汉（中游核心枢纽，核聚变发电站集群） · 上海（下游核心，核聚变原料提取、尖端研发） · 成都/西安/广州（上游及内陆物流通道节点）</td></tr><tr><td class="ik">关键人物</td><td class="iv"><a href="#钟思源">钟思源</a></td></tr><tr><td class="ik">关键事件</td><td class="iv">商业可控核聚变点火 · 长江独立 (新星革命)</td></tr></table>
+<div class="entity-body">
+<h3>长江工业弧区 (The Yangtze Industrial Arc)</h3>
+<h4>速览</h4>
+<p>地球的工业心脏与能源中心，人类第一座商业化可控核聚变能源站的诞生地，其庞大的重工业体系和能源输出能力使其成为决定全球格局的战略筹码。</p>
+<h4>基本信息</h4>
+<p>长江工业弧区是一片横跨长江上中下游的庞大工业与能源复合体。其类别属于核心工业区，地理位置位于地球东亚长江流域。作为人类最大的工业基地，这里掌握着全球的能源命脉和重工业制造能力。目前在经历了第二次海拓斯战争的破坏后，正处于人类联盟框架下的战后重建阶段。</p>
+<h4>地理与战略地位</h4>
+<p>长江工业弧区的战略价值无可估量，它被公认为地球的“工业心脏”。这里拥有完整的产业链闭环：下游（以上海为核心）负责核聚变原料（氘、氚）提取与尖端技术研发；中游（以武汉为核心）拥有庞大的核聚变发电站集群和重工业制造能力；上游（以成都等地为核心）控制着通往广阔内陆的能源分销和物流运输。这种自成一体的结构使其在提供近乎无限能源的同时，具备了强大的自持能力和战争潜力。</p>
+<h4>核心景观与子地点</h4>
+<ul>
+<li><strong>武汉核聚变发电站集群</strong>：中游的腹地心脏，这里是将原料转化为无尽能源的核心设施。</li>
+</ul>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>历史变迁</h4>
+<ul>
+<li><strong>2181年[·聚变点火]</strong>：在钟思源的领导下，人类首个商业化核聚变设施在这里成功点火并网，解决了CERN的能源危机。随后获得皇室的“皇家特许状”，整合成立了“长江动力”集团，成为帝国的能源和工业心脏。</li>
+</ul>
+<h4>叙事中的意义</h4>
+<p>长江工业弧区是“人类自主与工业力量”的终极象征。它是钟思源“方舟理想”的实体化身，证明了人类可以不依赖外星施舍，凭借自身的技术和工业实力在宇宙中立足。</p>
+</div>
+</article>
+<article class="entity" id="圣机体" data-sub="items">
+<div class="entity-title">圣机体 <span class="en">The Holy Cybersome Body</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">其它</td></tr><tr><td class="ik">分类</td><td class="iv">物件</td></tr><tr><td class="ik">首次出现</td><td class="iv">2150年</td></tr><tr><td class="ik">相关条目</td><td class="iv"><a href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a> · 圣机神教 · 圣罚军 · <a href="#至高行会">至高行会</a> · <a href="#亚戈努涅斯">亚戈·努涅斯</a> · <a href="#威尔默里奥斯">威尔默·里奥斯</a></td></tr><tr><td class="ik">重要性</td><td class="iv">圣机公社起义的精神图腾与权力象征，其实质为一台至高行会遗落的通讯信标残骸。</td></tr><tr><td class="ik">所有者</td><td class="iv"><a href="#赫克托瓦尔加斯">赫克托·瓦尔加斯</a></td></tr><tr><td class="ik">规格说明</td><td class="iv">一枚至高行会星际通讯网络的末端节点设备（信标中继站）残骸</td></tr><tr><td class="ik">结局</td><td class="iv">随圣言城陷落与赫克托被处决而彻底沦为废弃残骸</td></tr><tr><td class="ik">关键事件</td><td class="iv">2150年·火地岛发掘 · 2151年·安第斯神迹降临 · 2159年·圣言城之变 · 2160年·随城破覆灭</td></tr></table>
+<div class="entity-body">
+<h3>圣机体 (The Holy Cybersome Body)</h3>
+<h4>速览</h4>
+<p>"圣机体"是圣机神教的最高信仰核心与"圣物"，它作为点燃南美大陆矿工起义的精神图腾，通过其人间的代言人"天启者"赫克托·瓦尔加斯传递旨意，塑造了圣罚军狂热的信仰根基。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>基本信息</h4>
+<ul>
+<li><strong>归属</strong>：赫克托·瓦尔加斯（圣机神教）</li>
+<li><strong>实质</strong>：至高行会星际通讯网络的末端节点设备（信标中继站）残骸</li>
+<li><strong>现状</strong>：随圣言城陷落与赫克托之死而被遗弃</li>
+</ul>
+<h4>描述与规格</h4>
+<p>在信仰图腾上，圣机体的象征图像为齿轮与升起的太阳的结合体。</p>
+<p>从科学实质来看，该物件是至高行会于2130年协助叛军撤离火地岛时遗落的通讯设备残骸。设备内部仍保留微弱电源，长期维持极低能耗的"守候模式"（Beacon Mode），依靠<strong>生物电感应激活</strong>。当人手触碰时，皮肤的微弱生物电流会使其切换为激活广播模式，产生以下机械反应：</p>
+<ul>
+<li><strong>光与声音</strong>：内部能量晶体振荡发出金光，并在压电效应下产生跨越人类正常听觉频段的低频嗡鸣声（能量外溢现象）。</li>
+<li><strong>数据广播</strong>：激活后自动向宽频段全向区域广播"寻址协议包"（试图向母网确认自身坐标的标准程序）。覆盖区内的所有个人终端会被迫接收这段无法解析的至高行会专有编码格式数据，在屏幕上强制显示为金色乱码。</li>
+</ul>
+<p>这一系列标准程序运行的物理与电子现象，被缺乏认知的信徒们误认为"神迹"与"圣旨"。</p>
+<h4>关键经历与结局</h4>
+<ul>
+<li><strong>2150年·火地岛发掘</strong>：赫克托·瓦尔加斯在火地岛12号矿井塌方中濒死受困，偶然发现了这枚嵌在岩层裂缝中的遗落残骸。他将其无法理解的光声与信号误读为高维神明的启示，自此自居"天启者"，成为圣机公社信仰的起点。</li>
+<li><strong>2151年·安第斯神迹降临</strong>：起义爆发期间，赫克托在秘密集会中展示了该"圣物"，利用其广播机制触发全场矿工个人终端出现金色乱码，成功利用这一震撼的"神迹"凝聚了庞大的狂热信徒武装，催生了席卷南美大陆的圣罚军。</li>
+<li><strong>2159年·圣言城之变</strong>：随着芝加哥战役的失败与北伐受挫，"圣机体"的"圣旨"开始沦为赫克托掩盖战略失误的政治工具。他借"神启"之名下令刺杀亚戈·努涅斯，随后又以"曲解圣旨"为借口处决了执行者威尔默·里奥斯。</li>
+<li><strong>2160年·随城破覆灭</strong>：高层内斗的丑闻令"圣机体"全知全能的绝对正确形象受到严重冲击，信仰根基彻底动摇。神盾军凭借至高行会天眼网络的支援攻破圣言城，赫克托在废墟中被发现并遭到处决，这枚通讯残骸连同其虚构出的信仰体系一同迎来了毁灭。</li>
+</ul>
+<h4>意义</h4>
+<p>"圣机体"作为一种极具效力的信仰工具，为绝望的底层矿工提供了一个超越现实苦难的终极目标——通过死亡（献祭）将意识上传至永恒乐土"圣机公社"，这直接赋予了起义军悍不畏死的狂热战斗力。然而，这一席卷美洲的庞大政权，其基石仅是一台遗落的外星设备在虚空中发出的、永远不会得到母网应答的孤独呼唤，具有极强的叙事讽刺意味。最终，它从不可动摇的精神图腾，彻底沦为了被独裁权力随意解读和掩饰恐惧的空洞符号。</p>
+</div>
+</article>
+<article class="entity" id="圣锤级机甲" data-sub="items">
+<div class="entity-title">圣锤级机甲 <span class="en">Holy Hammer-Class Mecha</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">其它</td></tr><tr><td class="ik">分类</td><td class="iv">物件</td></tr><tr><td class="ik">首次出现</td><td class="iv">云顶城战役</td></tr><tr><td class="ik">相关条目</td><td class="iv">圣罚军 · <a href="#莉蒂亚托雷斯">莉蒂亚·托雷斯</a> · <a href="#神盾军">神盾军</a> · <a href="#武田善治郎">武田善治郎</a> · 许珀里翁</td></tr><tr><td class="ik">重要性</td><td class="iv">圣机公社标志性的重型战争机器，其模块化改装思路成为后世UKE军用机甲的技术先驱。</td></tr><tr><td class="ik">所有者</td><td class="iv">圣罚军</td></tr><tr><td class="ik">规格说明</td><td class="iv">由大型民用采矿机甲拼接改装而成的重型战争机器，装备UKE重武器与采矿钻头。</td></tr><tr><td class="ik">结局</td><td class="iv">随圣罚军覆灭及圣言城陷落而战损殆尽。</td></tr><tr><td class="ik">关键事件</td><td class="iv">首次亮相于云顶城战役，从要塞地板下破出。 · 达连远征中强行在雨林中开辟通道，并在奇卡纳克河伏击中自水下破出击溃UKE防线。 · 新墨西哥城战役中与神盾军坦克防线正面对抗。 · 圣言城防卫战期间被改造为“地鼠型”参与地下抵抗，最终全部损毁。</td></tr></table>
+<div class="entity-body">
+<h3>圣锤级机甲 (Holy Hammer-Class Mecha)</h3>
+<h4>速览</h4>
+<p>由“圣罚军”工匠团队以工程师莉蒂亚·托雷斯为代表，将安第斯联合矿区的民用采矿机甲紧急改装而成的重型战争机器。它不仅是圣机公社在战场上的绝对攻坚主力，其废土朋克式的模块化设计也展现了强悍的实用主义。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>基本信息</h4>
+<ul>
+<li><strong>归属</strong>：圣罚军</li>
+<li><strong>规模</strong>：首批改造为二十台，后随战争发展扩大规模，成为军队核心力量。</li>
+<li><strong>现状</strong>：随圣言城陷落而战损殆尽，退出历史舞台。</li>
+</ul>
+<h4>描述与规格</h4>
+<p>圣锤级机甲的设计充满了“废土朋克”的实用主义美学。机身覆盖着从各处搜刮来的、大小不一的拼接装甲板，焊痕累累；胸前喷涂“圣机体”标志（齿轮与升起的太阳），作为圣罚军信仰与工业力量的象征。其武器系统将缴获的UKE重型防空加农炮与原有的工业采矿钻头粗暴地结合在一起。尽管技术水平落后于UKE的正规军备，但其巨大的体型与从采矿作业继承的钻探能力，赋予了它在坑道战、水下及丛林等复杂地形中无可比拟的蛮力与突袭优势。</p>
+<h4>关键经历与结局</h4>
+<ul>
+<li><strong>云顶城战役</strong>：圣锤机甲首次投入实战，从山体内部垂直掘进，直接在要塞能源中心地板下破出，一战成名。</li>
+<li><strong>达连远征</strong>：机甲集结为“开拓组”，用巨型钻头清理巨树与异兽，强行在雨林中开辟行军通道；在奇卡纳克河畔战役中，潜伏于水底的圣锤机甲在关键时刻破水而出，以重炮火横扫并瞬间击溃了UKE防线。</li>
+<li><strong>新墨西哥城战役</strong>：作为钢铁洪流的先锋，与神盾军的坦克集群发生惨烈正面对抗，最终以巨大代价协助攻克城市。</li>
+<li><strong>圣言城陨落</strong>：在最后的三十天防卫战中，残存的圣锤机甲被加装钻头进一步改造为“地鼠型”，依托地下网络对神盾军装甲部队进行隐蔽侧击。随着地下网络被神盾军摧毁，机甲部队随城市一同覆灭。</li>
+</ul>
+<h4>意义</h4>
+<p>作为圣机公社的标志性装备，“圣锤”机甲不仅在阵地攻坚与要塞突破中发挥了无可替代的作用，其大胆的模块化改装思路还无意中启发了神盾军将领武田善治郎，成为了后世UKE“师星运动”中“许珀里翁”系列军用机甲的直接技术先驱。</p>
+</div>
+</article>
+<article class="entity" id="天基防线" data-sub="items">
+<div class="entity-title">天基防线 <span class="en">Sky-Based Defense Line</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">其它</td></tr><tr><td class="ik">分类</td><td class="iv">物件</td></tr><tr><td class="ik">首次出现</td><td class="iv">2138年</td></tr><tr><td class="ik">相关条目</td><td class="iv"><a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#阿斯兰一世">阿斯兰一世</a> · <a href="#地球联合王国">地球联合王国</a> · 南十字自由联盟（叛军） · <a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">重要性</td><td class="iv">象征帝国巅峰权力的物理载体，同时也是其军事思想僵化与技术全面落后的历史遗骸。</td></tr><tr><td class="ik">所有者</td><td class="iv">UKE（地球联合王国）</td></tr><tr><td class="ik">规格说明</td><td class="iv">环绕地球近地轨道的庞大防御阵地，配备高能激光武器群与高精度轨道锁定系统。</td></tr><tr><td class="ik">结局</td><td class="iv">被至高行会彻底摧毁。</td></tr><tr><td class="ik">关键事件</td><td class="iv">2130年—2138年：历经技术瓶颈后最终建造完成。 · 2138年秋：首次实战，发动轨道打击摧毁叛军太空据点。 · 第一次至高行会战争：因技术代差被从内部瘫痪并摧毁。</td></tr></table>
+<div class="entity-body">
+<h3>天基防线 (Sky-Based Defense Line)</h3>
+<h4>速览</h4>
+<p>由帝国大战略家里德·阿姆斯特朗将军倾注半生心血建立的近地轨道防御系统。作为维护UKE绝对统治的战略核心，它被视为帝国技术实力与不可侵犯的象征。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>基本信息</h4>
+<ul>
+<li><strong>归属</strong>：UKE（地球联合王国）</li>
+<li><strong>规模</strong>：覆盖近地轨道的巨型固定阵地系统。</li>
+<li><strong>现状</strong>：已作为军事资产被彻底抹去。</li>
+</ul>
+<h4>描述与规格</h4>
+<p>防线的底层逻辑基于帝国陆军的“固定阵地”思维。系统曾克服了激光武器后坐力的材料强度测试，并在轨道力学应用上达到了误差小于0.3%的锁定精度。它能通过数十道高能激光汇聚成光柱，对低轨道目标实施毁灭性打击。然而，防线的设计目标始终局限于技术水平相似的人类对手，对拥有短程空间跃迁能力的星际文明缺乏任何有效的拦截机制。它不仅是军事防御工程，更是阿斯兰一世“虽远必诛”口号的物理载体和“旧世界秩序”的精神图腾，在物理层面上宣示着帝国对地球领空的绝对主权。</p>
+<h4>关键经历与结局</h4>
+<ul>
+<li><strong>建造与突破（2130年秋—2138年秋）</strong>：为封锁并消灭逃入太空的叛军，阿斯兰一世不计代价下令建造。工程在2135年遭遇轨道锁定与材料强度的严重瓶颈，直至2137年春莱恩·雷蒙德作为核心顾问加入，才突破了技术封锁并最终完工。</li>
+<li><strong>肃清叛军（2138年秋）</strong>：防线首次投入实战，瞬间摧毁了叛军最后的太空据点。此次胜利将帝国的狂妄推向巅峰。</li>
+<li><strong>全面崩溃（第一次至高行会战争期间）</strong>：随着帝国备战令下达，防线进入一级战备状态并由里德·阿姆斯特朗亲自指挥。然而，面对至高行会先遣舰队，防线遭到代差级别的技术碾压，敌方利用空间跃迁技术直接从防线内部盲区发动打击，数小时内便将这座帝国的最高骄傲彻底瘫痪和摧毁。</li>
+</ul>
+<h4>意义</h4>
+<p>天基防线的兴衰是一面映照帝国虚幻繁荣的镜子。它对内是宣告旧秩序不可撼动的“天威”，对外则是帝国高层面对未知星际文明时不切实际的幻想。它最终的毁灭性失败，标志着地球传统陆战思维在太空时代的终结。</p>
+</div>
+</article>
+<article class="entity" id="太阳系资源开发公司" data-sub="items">
+<div class="entity-title">太阳系资源开发公司 <span class="en">Sol Resources Corporation</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">其它</td></tr><tr><td class="ik">分类</td><td class="iv">物件</td></tr><tr><td class="ik">首次出现</td><td class="iv">2175</td></tr><tr><td class="ik">相关条目</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · 桑切斯·纳瓦罗 · <a href="#钟思源">钟思源</a> · 新巴拿马星际贸易学院 · 深空舰队</td></tr><tr><td class="ik">重要性</td><td class="iv">莱恩·雷蒙德为深空舰队和跃迁引擎秘密研发建立的独立经济火种与造血引擎。</td></tr><tr><td class="ik">所有者</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · 桑切斯·纳瓦罗</td></tr><tr><td class="ik">规格说明</td><td class="iv">包含12处机器人矿区、3个月球精炼站、45艘矿石运输船及同位素提取基地的星际矿业网络。</td></tr><tr><td class="ik">结局</td><td class="iv">2198年在《Vor'lag条约》签订后核心资产被托管或征用，实质性破产。</td></tr><tr><td class="ik">关键事件</td><td class="iv">2175年：莱恩·雷蒙德启动太阳系资源开发计划 · 2177年：第一批无人轨道中继站在小行星带建立，公司初具雏形 · 2186年：转型供应同位素，获长江动力长期合同 · 2198年：受条约限制资产被剥夺，公司破产解散</td></tr></table>
+<div class="entity-body">
+<h3>太阳系资源开发公司 (Sol Resources Corporation)</h3>
+<h4>速览</h4>
+<p>由莱恩·雷蒙德策划、桑切斯·纳瓦罗实际操盘的星际矿业公司，曾是深空舰队独立于帝国财政体系之外的核心经济支柱与秘密研发资金来源。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>基本信息</h4>
+<ul>
+<li><strong>归属</strong>：莱恩·雷蒙德（幕后控制）、桑切斯·纳瓦罗（实际操盘）</li>
+<li><strong>规模</strong>：鼎盛期拥有12处机器人矿区、3个月球精炼站、45艘矿石运输船，并具备氘、氚同位素的深加工能力。</li>
+<li><strong>现状</strong>：核心资产在《Vor'lag条约》后被第三方托管或征用，已实质性破产。</li>
+</ul>
+<h4>描述与规格</h4>
+<p>这是一家以莱恩·雷蒙德手中掌控的少量帝国运输船为启动资本，依托新巴拿马星际贸易学院的商业人才网络组建而成的企业。在运作模式上，它是一个分布式的星际矿业网络，早期依靠无人轨道中继平台与机器人编队开采小行星带矿石，并运往月球精炼站处理。后期随着业务升级，公司将部分矿场转型为同位素提取基地，打通了从原材料采集到高端能源材料供应的完整产业链。这不仅是一家商业实体，更是莱恩在帝国权力棋局之外，为维系舰队存活和自主研发跃迁引擎而打造的独立“血库”。</p>
+<h4>关键经历与结局</h4>
+<ul>
+<li><strong>2175年</strong>：深空舰队的跃迁引擎研发资金被帝国太后切断。为寻找自我造血的生存之路，莱恩·雷蒙德决定暂时放弃依赖拨款，启动“太阳系资源开发计划”。</li>
+<li><strong>2177年 - 2180年</strong>：桑切斯·纳瓦罗受邀主持公司组建。在四年的蛰伏期内，工程团队在小行星带与月球之间建立起初具规模的矿业与精炼网络，为深空舰队提供了稳定的基础现金流。</li>
+<li><strong>2186年春</strong>：公司敏锐抓住钟思源“长江动力”核聚变项目的需求，转型供应氘、氚同位素，并签订了长达五年的高利润供应合同。这笔庞大的商业现金流使得莱恩得以重启被搁置的跃迁引擎秘密研发。</li>
+<li><strong>2198年6月</strong>：随着《Vor'lag条约》的签订，公司遭遇毁灭性打击。所有矿场、运输船和精炼站等核心资产均被第三方托管或征用，公司沦为空壳。莱恩随后在通讯中主动解除桑切斯的忠诚义务，劝其另寻生存出路，标志着公司正式退出历史舞台。</li>
+</ul>
+<h4>意义</h4>
+<p>作为莱恩·雷蒙德“师夷长技”路线的重要经济载体，太阳系资源开发公司证明了人类可以在脱离帝国恩赐的情况下，依靠商业逻辑与工业生产力在深空立足。它创造的巨额利润为第一代深空舰队的重生和跃迁引擎技术的初步积累争取了宝贵时间。同时，其搭建的庞大民间商业网络与物流渠道，也为日后帝国剧变中其他力量的生存与转移留下了隐秘的后路。</p>
+</div>
+</article>
+<article class="entity" id="梦晶" data-sub="items">
+<div class="entity-title">梦晶 <span class="en">Dream Crystal</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">其它</td></tr><tr><td class="ik">分类</td><td class="iv">物件</td></tr><tr><td class="ik">首次出现</td><td class="iv">2130年</td></tr><tr><td class="ik">相关条目</td><td class="iv"><a href="#至高行会">至高行会</a> · <a href="#地球联合王国">地球联合王国</a> · <a href="#新巴拿马城">新巴拿马城</a> · <a href="#梁文忠">梁文忠</a> · <a href="#泽洛斯">泽洛斯</a></td></tr><tr><td class="ik">重要性</td><td class="iv">摧毁了UKE社会生产力的精神鸦片，其被强行清除的事件是第一次Sovereign-Human战争的直接导火索。</td></tr><tr><td class="ik">所有者</td><td class="iv"><a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">规格说明</td><td class="iv">微型灵能接收器（终端）及位于新巴拿马城的主节点（梦宫）</td></tr><tr><td class="ik">结局</td><td class="iv">灵能共振主节点被帝国彻底摧毁，终端设备引发全球范围的严重精神戒断反应。</td></tr><tr><td class="ik">关键事件</td><td class="iv">2130年：作为&quot;礼物&quot;被引入地球。 · 2138年：泛滥全球，导致数千万人沉沦与社会生产力锐减。 · 2139年初：全球共振主节点被帝国特种部队摧毁，引发全球网络瘫痪与精神海啸。</td></tr></table>
+<div class="entity-body">
+<h3>梦晶 (Dream Crystal)</h3>
+<h4>速览</h4>
+<p>梦晶是由至高行会引入地球的一种微型灵能接收器，通过读取大脑欲望并投射个性化幻象来产生极强的成瘾性。它像精神鸦片一样在地球迅速蔓延，严重侵蚀了地球联合王国（UKE）的社会生产力与民众意志。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>基本信息</h4>
+<ul>
+<li><strong>归属</strong>：至高行会</li>
+<li><strong>规模</strong>：终端覆盖全球数亿用户；其物理锚点为新巴拿马城的灵能共振主节点（"梦宫"）。</li>
+<li><strong>现状</strong>：全球共振主节点已被彻底摧毁，终端失效并沦为引发大规模精神创伤的根源。</li>
+</ul>
+<h4>描述与规格</h4>
+<p>梦晶并不是播放预设内容的普通娱乐设备，而是一种通过灵能技术运作的微型接收器。它能够主动读取佩戴者大脑深处最私密的欲望——例如权力、亲情或食欲，随后将这些信息传导至至高行会的灵能中枢，生成完全个性化的幻象并投射回佩戴者的大脑。</p>
+<p>这种绕过感官、直接刺激大脑奖励回路的方式，会使用户产生极其强烈的生理和心理依赖。一旦强行断开连接，使用者会陷入剧烈的精神戒断反应，表现为肌肉痉挛、惊厥、精神解体甚至死亡。整个全球梦网的运行，依赖于至高行会在新巴拿马城秘密建立的物理锚点，即本地人称为"梦宫"的灵能共振主节点，该节点伪装在一栋光鲜的商业大楼地下。</p>
+<h4>关键经历与结局</h4>
+<ul>
+<li><strong>2130年</strong>：至高行会的商人以"礼物"的名义将梦晶带入新巴拿马城，随后其迅速渗透至帝国的边缘地带乃至部分核心世界。</li>
+<li><strong>2138年</strong>：梦晶的使用已经失控，演变成席卷全球的"瘟疫"。数千万人沉溺于虚拟天堂，导致地球社会的传统伦理结构崩溃，生产力出现断崖式下跌，成为帝国繁华表象下最致命的溃烂点。</li>
+<li><strong>2139年初</strong>：在帝国情报官的授意下，梁文忠率领特种部队潜入新巴拿马城。特种小队通过注入信息病毒切断防御并引爆定向结构毁伤装药，将这颗全球核心的物理节点实施了外科手术般的无声摧毁。</li>
+<li><strong>结局与后果</strong>：主节点的坍塌引发了一场无形的精神海啸，导致全球数亿人在同一瞬间被粗暴地撕离虚拟世界。生理层面的暴力切断带来了可怕的戒断反应，其二次效应瞬间冲垮了全球的通讯网络，并在各大城市的医院与街头上引发了大规模动乱与系统性瘫痪。这场波及全行星的人道主义灾难蒙受了巨大的经济损失，直接促使至高行会战略家泽洛斯下达最后通牒，拉开了第一次Sovereign-Human战争的序幕。</li>
+</ul>
+<h4>意义</h4>
+<p>梦晶展示了至高行会如何利用人性的弱点，以极其隐蔽的手段实施兵不血刃的文明入侵。它不仅是第一次Sovereign-Human战争爆发的核心导火索，更以一种残酷的方式证明了地球帝国在极度麻醉中所维持的虚假繁荣与社会秩序是何等脆弱至是何等脆弱。</p>
+</div>
+</article>
+<article class="entity" id="黑曜石之矛" data-sub="items">
+<div class="entity-title">黑曜石之矛 <span class="en">The Obsidian Spear</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">其它</td></tr><tr><td class="ik">分类</td><td class="iv">物件</td></tr><tr><td class="ik">首次出现</td><td class="iv">2130年</td></tr><tr><td class="ik">相关条目</td><td class="iv"><a href="#至高行会">至高行会</a> · <a href="#泽洛斯">泽洛斯</a> · <a href="#沃里斯">沃里斯</a> · <a href="#地球联合王国">地球联合王国</a> · 万源之合 · 渊噬</td></tr><tr><td class="ik">重要性</td><td class="iv">至高行会在太阳系与邻近星域进行商业扩张、武力威慑与星际外交的核心权力具象。</td></tr><tr><td class="ik">所有者</td><td class="iv"><a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">规格说明</td><td class="iv">旗舰级商业护航舰，由无数几何形状的模块组成，表面覆盖半透明材料</td></tr><tr><td class="ik">结局</td><td class="iv">继续作为至高行会在地球轨道的监控与指挥中心，主导星际商业秩序</td></tr><tr><td class="ik">关键事件</td><td class="iv">2130年：降临地球高轨道，开启对人类的双线操作 · 2139年：见证地球联合王国签署《拉各斯条约》 · 2153-2154年：前往塔拉萨星系接触“万源之合”，进行技术与资源交易 · 2156年：在地球轨道降下两道天光，击溃阿斯兰一世的意志</td></tr></table>
+<div class="entity-body">
+<h3>黑曜石之矛 (The Obsidian Spear)</h3>
+<h4>速览</h4>
+<p>至高行会派驻太阳系及周边星系的旗舰级商业护航舰与移动指挥中心。它是一件将绝对技术优势与冷酷商业逻辑完美结合的艺术品，也是星际间弱肉强食法则的最终裁判场。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>基本信息</h4>
+<ul>
+<li><strong>归属</strong>：至高行会 (The Sovereign Guild)</li>
+<li><strong>规模</strong>：旗舰级商业护航舰</li>
+<li><strong>现状</strong>：作为至高行会在地球轨道的监视与指挥中心，维系着星际商业网络的绝对垄断。</li>
+</ul>
+<h4>描述与规格</h4>
+<p>这艘战舰的设计哲学与人类武器截然不同。它没有威武的炮塔或厚重的装甲，而是由无数几何形状的模块组成，如同一件精致的艺术品。舰体表面覆盖着半透明材料，在星光或恒星光线的反射下泛着幽冷的蓝色光泽。虽然被划分为“商业护航舰”，但其搭载的轨道打击系统和空间跃迁技术，对地球和初级文明而言意味着无法逾越的技术鸿沟。</p>
+<h4>关键经历与结局</h4>
+<ul>
+<li><strong>降临地球（2130年）</strong>：抵达地球高轨道，战略家泽洛斯在此截获了人类叛军的信号，并制定了向地球高层推广“梦晶”的“双线操作”战略。</li>
+<li><strong>《拉各斯条约》签约地（2139年）</strong>：在天基防线崩溃与拉各斯遭遇轨道定点打击后，其舰桥成为人类代表签署屈辱性条约的场所，见证了帝国尊严的扫地。</li>
+<li><strong>深渊接触（2153-2154年）</strong>：停泊于塔拉萨星系母星“深渊”轨道，向集群意识“万源之合”播种个体思想瘟疫，并以此为筹码与其进行军火与资源交易，间接促使了海拓斯远征军的诞生。</li>
+<li><strong>天罚时刻（2156年）</strong>：第二次Sovereign-Human战争期间，其舰桥成为泽洛斯主导第二次“惩戒”行动的决策室。该舰向新·君士坦丁堡降下两道毁灭性光柱，摧毁亚历山大记忆殿堂并重创帝国权力核心。</li>
+<li><strong>外星联合干涉（2201年）</strong>：在天顶联合体与地球联合王国爆发冲突时，该舰代表至高行会与天顶联合体达成军事干涉同盟，将人类文明拖入被两大外星势力共同托管的最终结局。</li>
+</ul>
+<h4>意义</h4>
+<p>“黑曜石之矛”号不仅是一艘战舰，更是至高行会“成本与利润”商业哲学的物理延伸。它在轨道上的每一次静默悬停与无声威慑，都比最激烈的炮火更能彰显星际文明之间冷酷的降维压剥削本质。</p>
+</div>
+</article>
+<article class="entity" id="跃迁技术" data-sub="tech">
+<div class="entity-title">跃迁技术 <span class="en">Jump Technology</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">其它</td></tr><tr><td class="ik">分类</td><td class="iv">科技</td></tr><tr><td class="ik">首次出现</td><td class="iv">2060—2080年代</td></tr><tr><td class="ik">相关条目</td><td class="iv"><a href="#至高行会">至高行会</a> · 天顶理事会 · 盖姆王国 · 海拓斯主权 · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a></td></tr><tr><td class="ik">重要性</td><td class="iv">跨星系快速部署与战略投送的核心技术，直接决定了星际霸权的兴衰与殖民战争的走向。</td></tr><tr><td class="ik">developer</td><td class="iv">至高行会</td></tr><tr><td class="ik">target</td><td class="iv">泛用航天器</td></tr><tr><td class="ik">mechanism</td><td class="iv">以巨量能量将局部真空压入临界态，短暂重接两地时空拓扑，使航天器跨越高维结构实现近似瞬时抵达。</td></tr><tr><td class="ik">key_features</td><td class="iv">强依赖预先解算的引力地图 · 跨星系稳定航道需建立预设的双向时空信标 · 恒星系内短程盲跳存在约5%距离的拓扑形变误差 · 跃迁重连前后飞船原有的动量与相对速度矢量保持守恒</td></tr><tr><td class="ik">application_cases</td><td class="iv">2080—2095年：天顶在独立战争中作为交易筹码，将跃迁技术完整蓝图交付给参战的盖姆志愿军。 · 2105—2115年：盖姆残余建造方舟进行绝命盲跳，向数百光年外逃亡，最终仅九艘抵达落点。 · 第一次至高行会战争：至高行会先遣舰队跃迁至地球天基防线内圈盲区，从内部精准摧毁并瘫痪了人类防御体系。 · 2154年—2193年：万源之合以母星50%液态水资源换取至高行会在太阳系L4建立的一次性锚点。远征军抵达后，锚点按协议自我熔毁。 · 2190年代：莱恩·雷蒙德因自研引擎受挫向至高行会购买短程跃迁模块以装备人类舰队；渊噬随即通过火星矿权交易向行会买下该引擎的后门权限，为太阳系战争埋下伏笔。 · 2242—2245年：天顶完成盲跳技术稳定化，在柯伊伯之战重创海拓斯，并用星球级巨像执行自杀式盲跳降维打击神权国腹地。</td></tr></table>
+<div class="entity-body">
+<h3>跃迁技术 (Jump Technology)</h3>
+<h4>速览</h4>
+<p>跨星系跃迁技术并非让飞船进行超光速飞行，而是通过极限能量重组局部宇宙空间结构，让两地短暂贴合。它是维系银河贸易与军事霸权的绝对基石。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>基本信息</h4>
+<ul>
+<li><strong>研发者</strong>：至高行会（海军派）</li>
+<li><strong>类别</strong>：航天推进与空间投送技术</li>
+<li><strong>针对对象</strong>：泛用航天器（星际战舰、商船、巨像投送平台等）</li>
+</ul>
+<h4>原理与特性</h4>
+<p>跃迁技术的核心原理被称为<strong>真空拓扑重连</strong>。如同在更高维度的层面上将宇宙空间折叠，使相距遥远的两地短暂相连，飞船在跃迁窗口开启时只需跨过一条被人工制造的“邻接面”，从而达成近似瞬时的位移。打开这一高维裂缝需要极高的能量峰值，并且受到严格的客观物理规律限制：</p>
+<ul>
+<li><strong>引力地图依赖</strong>：必须预先解算目标区域的引力势能地图，飞船无法直接跳跃到完全未知、未受观测的陌生引力场中。</li>
+<li><strong>时空信标限制</strong>：长距离的跨星系稳定通航，要求在引力平稳的深空目的地预先建设“时空锚点”或双向信标。</li>
+<li><strong>盲跳误差与守恒</strong>：在拥有完整引力数据的恒星系内部，舰队即使没有信标也能利用机载核心执行“短程盲跳”，但这会产生与跳跃距离呈正比的拓扑形变误差（误差率约为5%）。此外，位置坐标重叠并不改变物理状态，飞船原有的动量和相对速度在跃迁前后严格保持守恒。</li>
+</ul>
+<h4>应用案例</h4>
+<ul>
+<li><strong>2080-2120年：技术扩散与逃亡</strong>：天顶独立联盟在战争中为换取盖姆志愿军支持，将跃迁技术蓝图秘密转交。盖姆母星毁灭后，残存者依靠该蓝图制造 Seed Ark 舰队，向数百光年外进行盲跳，最终少数抵达并得以延续种族。</li>
+<li><strong>2140年：第一次至高行会战争</strong>：行会舰队在人类未曾认知的技术代差下，直接跃迁跳入地球天基防线的防御圈内部死角，从盲区开火，导致人类防线在数小时内系统性崩溃。</li>
+<li><strong>2193年：单向远征锚点</strong>：海拓斯主脑“万源之合”用母星半数的液态水向行会换取了一次性跃迁锚点。2193年7月，Kytos远征军借此精准空降太阳系L4静稳点，锚点完成输送后即自行熔毁消失。</li>
+<li><strong>2194年：致命的引擎后门</strong>：人类舰队领袖莱恩·雷蒙德为弥补机动性缺陷，无奈从至高行会采购了短程跃迁模块；而“渊噬”主脑在火星深处用矿权向行会买下了该型引擎的系统后门，将人类的远征集结变为了致命陷阱。</li>
+<li><strong>2240年：稳定盲跳反攻</strong>：天顶在银河大战后期攻克了盲跳技术稳定性，通过隐秘跃迁反包围海拓斯主力，并直接投送装载地爆天星的巨像武器进入盖姆技术神权国腹地，瓦解了算力行星。</li>
+</ul>
+<h4>意义</h4>
+<p>跃迁技术不仅代表了对宇宙空间维度的极致掌控，更是各方文明争夺生存权和霸权的决定性门槛。在银河系的历史进程中，跃迁能力的每一次交易、共享或封锁，都彻底改变了文明间的战争格局与星际政治版图。</p>
+</div>
+</article>
+<article class="entity" id="太阳系主力舰队阅舰式" data-sub="events">
+<div class="entity-title">太阳系主力舰队阅舰式 <span class="en">Solar System Main Fleet Review</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">其它</td></tr><tr><td class="ik">分类</td><td class="iv">事件</td></tr><tr><td class="ik">相关条目</td><td class="iv"><a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · 卡塔琳娜太后 · 尤里·阿斯兰 · <a href="#泽洛斯">泽洛斯</a> · 卡塔琳娜之冠 · 天枢巨像号</td></tr><tr><td class="ik">重要性</td><td class="iv">标志着深空舰队的重生与地球帝国军事力量的表象巅峰，莱恩发表“让地球再次伟大”演说，将个人声望推向极点。</td></tr><tr><td class="ik">date</td><td class="iv">2190年6月</td></tr><tr><td class="ik">地理位置</td><td class="iv">地球轨道（&quot;卡塔琳娜之冠&quot;空间站旁）</td></tr><tr><td class="ik">participants</td><td class="iv">莱恩·雷蒙德 · 卡塔琳娜太后 · 尤里·阿斯兰 · 太阳系主力舰队</td></tr><tr><td class="ik">登场势力</td><td class="iv">地球帝国 · 深空舰队 · <a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">结局</td><td class="iv">深空舰队完成三十艘主力舰的编制与展示，莱恩获得巨大政治资本；掩盖了自研跃迁技术停滞的致命弱点；遭到了至高行会的暗中监视与算计。</td></tr></table>
+<div class="entity-body">
+<h3>太阳系主力舰队阅舰式 (Solar System Main Fleet Review)</h3>
+<h4>速览</h4>
+<p>发生于2190年春的盛大军事检阅仪式，标志着莱恩·雷蒙德麾下的深空舰队在历经五年蛰伏后重获新生，展现了地球帝国空前的军事威慑力。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>基本信息</h4>
+<ul>
+<li><strong>时间</strong>：2190年春</li>
+<li><strong>地点</strong>：地球轨道（"卡塔琳娜之冠"空间站旁）</li>
+<li><strong>相关方</strong>：地球帝国皇室、深空舰队、至高行会（暗中监视）</li>
+</ul>
+<h4>经过</h4>
+<p>2185年，莱恩·雷蒙德通过一场政治豪赌为太后建造了"卡塔琳娜之冠"空间站，成功换取了太后的信任与庞大的资源倾斜。在帝国资金与深空舰队旗下矿业利润的双重驱动下，舰队迎来了为期五年的高速复兴期。</p>
+<p>至2190年春，深空舰队成功下水三十艘主力战舰。阅舰式在地球轨道上围绕"卡塔琳娜之冠"空间站盛大举行。长达三公里的旗舰"天枢巨像号"居中列阵，卡塔琳娜太后与尤里亲王在空间站观景台进行检阅。莱恩·雷蒙德在舰桥上向全帝国发表了激昂的"让地球再次伟大"演说，宣告人类已成为太阳系的主人。五十万民众在新·君士坦丁堡广场通过巨型屏幕观看直播，狂热情绪席卷全帝国。</p>
+<h4>影响与意义</h4>
+<p>阅舰式不仅将莱恩·雷蒙德个人的政治声望推向了顶峰，也缔造了地球帝国军事力量无敌的虚假自信。</p>
+<p>表象之下，深空舰队隐患重重：尽管所有武器系统均已针对至高行会的战舰护盾与装甲进行了优化校准，但作为舰队真正灵魂的自研跃迁引擎项目，却在第47次测试中宣告失败。舰队实质上是一支受制于传统亚光速引擎的"短腿巨人"，缺乏星际快速机动能力。</p>
+<p>更为致命的是，这场全频道直播的盛大展示完全暴露在至高行会的监视中。泽洛斯在"黑曜石之矛"号上平静地解析了舰队的各项参数配置，并就此下达了利用第三方势力将其消灭的决断。阅舰式的辉煌，最终沦为海拓斯战争爆发前夜最为讽刺的悲剧伏笔。</p>
+</div>
+</article>
+<article class="entity" id="拉各斯条约" data-sub="events">
+<div class="entity-title">拉各斯条约 <span class="en">Treaty of Lagos</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">其它</td></tr><tr><td class="ik">分类</td><td class="iv">事件</td></tr><tr><td class="ik">相关条目</td><td class="iv">地球联合王国（UKE） · <a href="#至高行会">至高行会</a> · <a href="#里德阿姆斯特朗">里德·阿姆斯特朗</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a> · <a href="#梁文忠">梁文忠</a> · <a href="#阿斯兰一世">阿斯兰一世</a> · <a href="#切尔尼绍夫">切尔尼绍夫</a> · 卡西姆·哈达德</td></tr><tr><td class="ik">重要性</td><td class="iv">标志着UKE“天朝上国”地位的终结，并开启了外星文明深度干预地球事务的时代。</td></tr><tr><td class="ik">date</td><td class="iv">第一次Sovereign-Human战争后</td></tr><tr><td class="ik">地理位置</td><td class="iv">至高行会旗舰“黑曜石之矛”号</td></tr><tr><td class="ik">participants</td><td class="iv">里德·阿姆斯特朗 · 莱恩·雷蒙德 · 泽洛斯</td></tr><tr><td class="ik">登场势力</td><td class="iv">UKE · <a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">结局</td><td class="iv">UKE支付天价赔款，开放五个重要港口为自由贸易区，至高行会获得治外法权与直接干预权。</td></tr></table>
+<div class="entity-body">
+<h3>拉各斯条约 (Treaty of Lagos)</h3>
+<h4>速览</h4>
+<p>第一次Sovereign-Human战争后，UKE被迫与至高行会签订的不平等条约。该条约作为后续一系列类似条约的范本，深刻地改变了地球的政治、经济和文化版图。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>基本信息</h4>
+<ul>
+<li><strong>时间</strong>：第一次Sovereign-Human战争后</li>
+<li><strong>地点</strong>：至高行会旗舰“黑曜石之矛”号</li>
+<li><strong>相关方</strong>：UKE、至高行会</li>
+</ul>
+<h4>经过</h4>
+<p>在拉各斯能源枢纽遭遇至高行会轨道打击后，UKE高层为了维持统治稳定，向皇帝阿斯兰一世编造了守备军英勇殉国、外星势力受震慑而主动求和的虚假叙事。随后，被贬为庶人的前将军里德·阿姆斯特朗与莱恩·雷蒙德登上至高行会旗舰“黑曜石之矛”号，在向全宇宙已知文明广播的情况下签署了该条约。</p>
+<p>条约规定，UKE需向至高行会支付巨额赔款；开放上海、拉各斯、鹿特丹、新巴拿马城和悉尼五个重要港口城市作为“自由贸易区”；至高行会在这些区域享有治外法权，并在贸易秩序遭到破坏且未能恢复时拥有直接干预权。条约同时附带了帝国关于将梁文忠“已处以极刑”的虚假书面承诺（其实际被秘密发配边疆）。帝国大臣们私下通过财政部垫付了赔款差额，并镇压了查出账目问题的财政大臣卡西姆·哈达德。</p>
+<h4>影响与意义</h4>
+<p>《拉各斯条约》的签订标志着UKE“天朝上国”地位的彻底终结，开启了外星文明深度干预地球事务的时代。帝国对内将战败签约包装为“主动施恩”的慷慨姿态，是其信息茧房在外交层面的延伸。作为范本，该条约所确立的模式和影响为后续一系列不平等条约奠定了基础。</p>
+</div>
+</article>
+<article class="entity" id="文明的创伤" data-sub="events">
+<div class="entity-title">文明的创伤 <span class="en">The Trauma of Civilization</span></div>
+<table class="infocard"><tr><td class="ik">类型</td><td class="iv">其它</td></tr><tr><td class="ik">分类</td><td class="iv">事件</td></tr><tr><td class="ik">相关条目</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · <a href="#至高行会">至高行会</a> · <a href="#亚历山大记忆殿堂">亚历山大记忆殿堂</a> · <a href="#阿斯兰一世">阿斯兰一世</a> · <a href="#卡塔琳娜阿斯兰">卡塔琳娜·阿斯兰</a> · <a href="#切尔尼绍夫">切尔尼绍夫</a> · <a href="#莱恩雷蒙德">莱恩·雷蒙德</a></td></tr><tr><td class="ik">重要性</td><td class="iv">彻底粉碎了地球联合王国天朝上国的幻觉，标志着旧时代终结与帝国新权力时代的开启。</td></tr><tr><td class="ik">date</td><td class="iv">2156年</td></tr><tr><td class="ik">地理位置</td><td class="iv">地球·新·君士坦丁堡</td></tr><tr><td class="ik">participants</td><td class="iv">阿斯兰一世 · 切尔尼绍夫 · 泽洛斯 · 沃里斯 · 卡塔琳娜·阿斯兰</td></tr><tr><td class="ik">登场势力</td><td class="iv"><a href="#地球联合王国">地球联合王国</a> · <a href="#至高行会">至高行会</a></td></tr><tr><td class="ik">结局</td><td class="iv">亚历山大记忆殿堂被毁，军务大臣切尔尼绍夫身亡，阿斯兰一世崩溃并在不久后驾崩，卡塔琳娜借幼帝接管最高权力。</td></tr></table>
+<div class="entity-body">
+<h3>文明的创伤 (The Trauma of Civilization)</h3>
+<h4>速览</h4>
+<p>“文明的创伤”发生于2156年第二次至高行会战争末期，是至高行会为惩戒地球联合王国而实施的一次精确轨道打击与心理战。这场毫无预警的降维打击直接摧毁了人类文明的文化象征，并终结了阿斯兰一世的统治。</p>
+<div class="callout spoiler"><span class="callout-label">⚠ 剧情剧透</span>
+</div>
+<h4>基本信息</h4>
+<ul>
+<li><strong>时间</strong>：2156年</li>
+<li><strong>地点</strong>：地球·首都区域（亚历山大记忆殿堂与皇家演练场）</li>
+<li><strong>主要相关方</strong>：地球联合王国、至高行会</li>
+</ul>
+<h4>经过</h4>
+<p>2156年，面对地球联合王国无视警告并在首都集结三万辆坦克进行阅兵的挑衅，至高行会“黑曜石之矛”号旗舰抵达地球轨道。行会高层泽洛斯以冰冷的商业逻辑否决了直接击毙皇帝的方案，选择通过展示绝对的力量差距来重建帝国的“债务秩序”。</p>
+<ul>
+<li><strong>第一道天光（静默打击）</strong>：至高行会没有发出任何宣告，从轨道降下一道能量柱，瞬间摧毁了作为人类文明宝库的亚历山大记忆殿堂。在这场毁灭中，包含土星五号模型、福特T型车与初代iPhone在内的大量人类历史瑰宝被掩埋在废墟瓦砾之下，而远处的阅兵场甚至未能察觉。</li>
+<li><strong>直播劫持</strong>：行会在卫星层面接管了帝国官方的阅兵直播信号，导致全球屏幕出现短暂的静默，随后向全人类实时转播皇帝的特写画面。</li>
+</ul>
+<h4>影响与意义</h4>
+<p>这场充满戏剧性与羞辱性的打击彻底粉碎了帝国“天朝上国”的狂妄幻觉。在全人类的注视下，阿斯兰一世因深度的恐惧与无力感当场精神崩溃，连同其象征权力的“胜利女神”手枪一同跌落，并在不久后驾崩。</p>
+<p>事件直接引发了地球联合王国的权力更迭。摄政太后卡塔琳娜·阿斯兰借此乱局，以保护一岁幼帝阿斯兰二世的名义接管帝国，拉开了一个新权力时代的帷幕。同时，记忆殿堂的废墟与其中未被气化的iPhone残骸，成为了莱恩·雷蒙德等新时代“裱糊匠”发誓不再依赖他人赐予、踏上漫长自强之路的信念锚点。</p>
+</div>
+</article>
+</div>
+  </main>
+</div>
+
+<script>
+
+/* ── Internal helpers ─────────────────────────────────────────────────── */
+
+// Activate the tab chrome (nav, sidebar, panel) and reset sidebar visibility.
+// Returns the sidebar-group element for the tab.
+function _activateTab(key) {
+  document.querySelectorAll('.nav-tab').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.sidebar-group').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(el) { el.classList.remove('active'); });
+
+  var tab = document.querySelector('.nav-tab[data-tab="' + key + '"]');
+  var sg  = document.querySelector('.sidebar-group[data-tab="' + key + '"]');
+  var tp  = document.querySelector('.tab-panel[data-tab="' + key + '"]');
+  if (tab) tab.classList.add('active');
+  if (sg)  sg.classList.add('active');
+  if (tp)  tp.classList.add('active');
+
+  // Reset all sidebar items to visible (selectSub will filter them)
+  if (sg) sg.querySelectorAll('[data-sub]').forEach(function(el) { el.style.display = ''; });
+  return sg;
+}
+
+// Show exactly one entity article by its anchor ID; hide all others in the same panel.
+function showEntity(anchorId) {
+  var el = document.getElementById(anchorId);
+  if (!el || !el.classList.contains('entity')) return;
+  var panel = el.closest('.tab-panel');
+  if (!panel) return;
+  panel.querySelectorAll('.entity').forEach(function(e) { e.classList.remove('active'); });
+  el.classList.add('active');
+  // Scroll content area to the top so the article title is immediately visible
+  var content = document.querySelector('.content');
+  if (content) content.scrollTop = 0;
+}
+
+/* ── Public API ───────────────────────────────────────────────────────── */
+
+// Switch to a tab and auto-select its first sub-item (which shows its first entity).
+function switchTab(key) {
+  var sg = _activateTab(key);
+  history.pushState({tab: key}, '', '#tab-' + key);
+  if (sg && sg.dataset.firstSub) {
+    selectSub(key, sg.dataset.firstSub, sg.dataset.firstAnchor, true);
+  }
+}
+
+// Filter the sidebar to show only items matching subKey, and show the first
+// entity of that sub in the content panel.
+// noHistory=true skips replaceState (used when called internally).
+function selectSub(tabKey, subKey, anchorId, noHistory) {
+  // Filter sidebar
+  var sg = document.querySelector('.sidebar-group[data-tab="' + tabKey + '"]');
+  if (sg) {
+    sg.querySelectorAll('[data-sub]').forEach(function(el) {
+      el.style.display = (el.dataset.sub === subKey) ? '' : 'none';
+    });
+  }
+  if (!noHistory) {
+    history.replaceState({tab: tabKey, sub: subKey}, '', '#tab-' + tabKey);
+  }
+  // Show the first entity belonging to this sub in the content panel
+  var tp = document.querySelector('.tab-panel[data-tab="' + tabKey + '"]');
+  if (tp) {
+    tp.querySelectorAll('.entity').forEach(function(e) { e.classList.remove('active'); });
+    var first = tp.querySelector('.entity[data-sub="' + subKey + '"]');
+    if (first) first.classList.add('active');
+    var content = document.querySelector('.content');
+    if (content) content.scrollTop = 0;
+  }
+}
+
+// Navigate to an entity that may be in a different tab (used by cross-links in body text).
+// Bug-fix: only switches tab if the target tab is not already active.
+function jumpTo(anchorId) {
+  var el = document.getElementById(anchorId);
+  if (!el) return;
+  var panel = el.closest('.tab-panel');
+  if (!panel) return;
+  var tabKey = panel.dataset.tab;
+
+  if (!panel.classList.contains('active')) {
+    // Tab not yet active — switch to it and show first sub
+    var sg = _activateTab(tabKey);
+    history.pushState({tab: tabKey}, '', '#tab-' + tabKey);
+    if (sg && sg.dataset.firstSub) {
+      sg.querySelectorAll('[data-sub]').forEach(function(e) {
+        e.style.display = e.dataset.sub === sg.dataset.firstSub ? '' : 'none';
+      });
+    }
+  }
+
+  if (el.classList.contains('entity')) {
+    // Update sidebar sub-filter to match this entity's sub, then show it
+    var subKey = el.dataset.sub;
+    if (subKey) {
+      var sg2 = document.querySelector('.sidebar-group[data-tab="' + tabKey + '"]');
+      if (sg2) {
+        sg2.querySelectorAll('[data-sub]').forEach(function(item) {
+          item.style.display = item.dataset.sub === subKey ? '' : 'none';
+        });
+      }
+    }
+    showEntity(anchorId);
+  }
+}
+
+/* ── Bootstrap ────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+
+  document.addEventListener('click', function(e) {
+    // 1. Dropdown sub-navigation items (carry data-tab / data-sub / data-anchor)
+    var di = e.target.closest('.dropdown-item[data-tab]');
+    if (di) {
+      e.preventDefault();
+      e.stopPropagation();
+      _activateTab(di.dataset.tab);
+      selectSub(di.dataset.tab, di.dataset.sub, di.dataset.anchor, false);
+      return;
+    }
+
+    // 2. Sidebar item links — show the single entity, keep current sub-filter
+    var sbItem = e.target.closest('.sb-item');
+    if (sbItem) {
+      e.preventDefault();
+      showEntity(sbItem.getAttribute('href').slice(1));
+      return;
+    }
+
+    // 3. All other internal hash links (e.g. cross-links inside entity body text)
+    var a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    e.preventDefault();
+    if (id.startsWith('tab-')) {
+      switchTab(id.slice(4));
+    } else {
+      jumpTo(id);
+    }
+  });
+
+  // Back / forward button
+  window.addEventListener('popstate', function() {
+    var hash = window.location.hash;
+    if (hash && hash.startsWith('#tab-')) {
+      var key = hash.slice(5);
+      var sg = _activateTab(key);
+      if (sg && sg.dataset.firstSub) {
+        selectSub(key, sg.dataset.firstSub, sg.dataset.firstAnchor, true);
+      }
+    }
+  });
+
+  // Initial page load: restore from URL hash or default to walkthrough
+  var hash = window.location.hash;
+  var initKey = (hash && hash.startsWith('#tab-')) ? hash.slice(5) : 'walkthrough';
+  history.replaceState({tab: initKey}, '', '#tab-' + initKey);
+  var initSg = _activateTab(initKey);
+  if (initSg && initSg.dataset.firstSub) {
+    selectSub(initKey, initSg.dataset.firstSub, initSg.dataset.firstAnchor, true);
+  }
+});
+
+</script>
+</body>
+</html>
